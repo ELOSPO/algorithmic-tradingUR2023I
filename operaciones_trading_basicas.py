@@ -28,7 +28,7 @@ orden_close = {
     "action": mt5.TRADE_ACTION_DEAL,
     "symbol": "EURUSD",
     "volume" : 0.05,
-    "type" : mt5.ORDER_TYPE_SELL,
+    "type" : mt5.ORDER_TYPE_SELL,   
     "position":303968985,
     "magic": 202304,
     "comment": 'SebasO',
@@ -79,7 +79,7 @@ open_positions = mt5.positions_get()
 df_positions = pd.DataFrame(list(open_positions), columns = open_positions[0]._asdict().keys())
 
 df_positions_profit = df_positions.copy()
-df_positions_profit = df_positions_profit[df_positions_profit['symbol'] == 'EURUSD']
+# df_positions_profit = df_positions_profit[df_positions_profit['profit'] == 'EURUSD']
 
 lista_ops = df_positions_profit['ticket'].unique().tolist()
 
