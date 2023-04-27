@@ -63,7 +63,7 @@ while True:
         if ultimo_precio > linea_ref + 20.0:
             enviar_operaciones(simb,mt5.ORDER_TYPE_SELL,  -100,mt5.symbol_info_tick(simb).bid + 500,0.01)
         elif ultimo_precio < linea_ref - 20.0:
-             enviar_operaciones(simb,mt5.ORDER_TYPE_BUY, linea_ref +100 ,mt5.symbol_info_tick(simb).ask - 500,0.01)
+             enviar_operaciones(simb,mt5.ORDER_TYPE_BUY, linea_ref ,mt5.symbol_info_tick(simb).ask - 500,0.01)
         else:
             print('No se cumplieron las condiciones')
 
@@ -74,8 +74,8 @@ while True:
             print("La ultima peración es ", tipo_ultima_operacion)
             if tipo_ultima_operacion == 1:
 
-                enviar_operaciones(simb,mt5.ORDER_TYPE_SELL, linea_ref-100,mt5.symbol_info_tick(simb).bid + 500,nuevo_volumen)
+                enviar_operaciones(simb,mt5.ORDER_TYPE_SELL, linea_ref,mt5.symbol_info_tick(simb).bid + 500,nuevo_volumen)
             if tipo_ultima_operacion == 0:
-                enviar_operaciones(simb,mt5.ORDER_TYPE_BUY, linea_ref + 100,mt5.symbol_info_tick(simb).ask - 500,nuevo_volumen)
+                enviar_operaciones(simb,mt5.ORDER_TYPE_BUY, linea_ref ,mt5.symbol_info_tick(simb).ask - 500,nuevo_volumen)
 
     time.sleep(60)
