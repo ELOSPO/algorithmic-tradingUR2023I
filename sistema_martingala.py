@@ -1,5 +1,6 @@
 import pandas as pd
 import MetaTrader5 as mt5
+import time
 
 nombre = 67043467
 clave = 'Genttly.2022'
@@ -36,18 +37,41 @@ def calcular_operaciones_abiertas():
     try:
         open_positions = mt5.positions_get()
         df_positions = pd.DataFrame(list(open_positions), columns = open_positions[0]._asdict().keys())
+        df_positions['time'] = pd.to_datetime(df_positions['time'], unit = 's')
     except:
         df_positions = pd.DataFrame()
     
     return df_positions
 
+while True:
+    simb = 'BTCUSD'
+    datos_simbolo = extraer_datos(simb,300)
 
-datos_simbolo = extraer_datos('ESM23',100)
+    datos_simbolo['ma50'] = datos_simbolo['close'].rolling(200).mean()
 
-datos_simbolo['ma50'] = datos_simbolo['close'].rolling(50).mean()
+    linea_ref = datos_simbolo['ma50'].iloc[299]
+    ultimo_precio = datos_simbolo['close'].iloc[299]
 
-linea_ref = datos_simbolo['ma50'].iloc[99]
-ultimo_precio = datos_simbolo['close'].iloc[99]
+    df_operaciones = calcular_operaciones_abiertas()
 
+    num_operaciones = len(df_operaciones)
+    print(ultimo_precio)
 
+    if num_operaciones == 0 :
+        if ultimo_precio > linea_ref + 1000.0:
+            enviar_operaciones(simb,mt5.ORDER_TYPE_SELL, linea_ref,mt5.symbol_info_tick(simb).bid + 1000,0.01)
+        elif ultimo_precio < linea_ref - 1000.0:
+             enviar_operaciones(simb,mt5.ORDER_TYPE_BUY, linea_ref,mt5.symbol_info_tick(simb).ask - 1000,0.01)
+        else:
+            print('No se cumplieron las condiciones')
 
+    else:
+        if df_operaciones['profit'].iloc[-1] < 0:
+            tipo_ultima_operacion = df_operaciones['type'].iloc[-1]
+            nuevo_volumen = df_operaciones['volume'].iloc[-1] + 0.02
+            if type == 1:
+                enviar_operaciones(simb,mt5.ORDER_TYPE_SELL, linea_ref,mt5.symbol_info_tick(simb).bid + 1000,nuevo_volumen)
+            else:
+                enviar_operaciones(simb,mt5.ORDER_TYPE_BUY, linea_ref,mt5.symbol_info_tick(simb).ask - 1000,nuevo_volumen)
+
+    time.sleep(60)
