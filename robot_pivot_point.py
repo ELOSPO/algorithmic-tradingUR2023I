@@ -2,14 +2,59 @@ import pandas as pd
 import numpy as np
 import MetaTrader5 as mt5
 import time
+import datetime
+from datetime import timedelta
 
 nombre = 67043467
 clave = 'Genttly.2022'
 servidor = 'RoboForex-ECN'
 path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
 
+# ORDER_TIME_GTC
+
+# La orden se encontrará en la cola hasta que sea quitada
+
+# ORDER_TIME_DAY
+
+# La orden estará activa solo durante el día comercial actual
+
+# ORDER_TIME_SPECIFIED
+
+# La orden estará activa hasta la fecha de expiración
+
+# ORDER_TIME_SPECIFIED_DAY
+
+# La orden estará activa hasta las 23:59:59 del día indicado. Si la hora no se encuentra en la sesión comercial, la expiración tendrá lugar en la hora comercial más próxima.
+
+hoy = datetime.datetime.now()
+tiempo_expiracion = hoy + timedelta(days = 1)
+
+tiempo_expiracion2 = datetime.datetime(tiempo_expiracion.year,tiempo_expiracion.month,tiempo_expiracion.day,0,0,0)
+
+fecha_cierre = int(tiempo_expiracion2.strftime('%Y%m%d'))
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 
+def obtener_ordenes_pendientes():
+    try:
+        ordenes = mt5.orders_get()
+        df = pd.DataFrame(list(ordenes), columns = ordenes[0]._asdict().keys())
+    except:
+        df = pd.DataFrame()
+
+    return df
+
+def remover_operacion_pendiente(nom_est):
+    df = obtener_ordenes_pendientes()
+    df_estrategia = df[df['comment'] == nom_est]
+    ticket_list = df_estrategia['ticket'].unique().tolist()
+    for ticket in ticket_list:
+        close_pend_request = {
+                                "action": mt5.TRADE_ACTION_REMOVE,
+                                "order": ticket,
+                                "type_filling": mt5.ORDER_FILLING_IOC
+        }
+
+        mt5.order_send(close_pend_request)
 
 def extraer_datos(simbolo,num_periodos,timeframe):
     rates = mt5.copy_rates_from_pos(simbolo,timeframe,0,num_periodos)
@@ -55,6 +100,7 @@ pending_order_buy = {
                     "type": mt5.ORDER_TYPE_BUY_LIMIT,
                     "sl": s_support,
                     "tp": media,
+                    "ORDER_TIME_SPECIFIED": fecha_cierre,
                     "comment": "MR_B",
                     "type_filling": mt5.ORDER_FILLING_IOC
 
@@ -177,3 +223,9 @@ for simbolo in list_symbols:
 
                         }
     mt5.order_send(pending_order_sell_B)
+
+
+
+
+remover_operacion_pendiente('SebasO')
+
