@@ -31,7 +31,11 @@ tiempo_expiracion = hoy + timedelta(days = 1)
 
 tiempo_expiracion2 = datetime.datetime(tiempo_expiracion.year,tiempo_expiracion.month,tiempo_expiracion.day,0,0,0)
 
-fecha_cierre = int(tiempo_expiracion2.strftime('%Y%m%d'))
+
+timestamp = int(tiempo_expiracion2.timestamp())
+
+# Imprimir el valor de tiempo UNIX
+print(timestamp)  # Salida: 1671222000.0
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 
 def obtener_ordenes_pendientes():
@@ -82,7 +86,7 @@ def calculate_pivot_points(df):
 
     return f_support, s_support, t_support, f_resistance, s_resistance, t_resistance, media
 
-simbolo = '.USTECHCash'
+simbolo = 'EURUSD'
 data = extraer_datos(simbolo,2,mt5.TIMEFRAME_D1)
 
 data = data.head(1)
@@ -91,7 +95,7 @@ data = data.head(1)
 f_support, s_support, t_support, f_resistance, s_resistance, t_resistance, media = calculate_pivot_points(data)
 
 # Estrategia de Mean Reversion
-
+#Así se envía la operación pendiente
 pending_order_buy = {
                     "action": mt5.TRADE_ACTION_PENDING,
                     "symbol": simbolo,
@@ -100,8 +104,9 @@ pending_order_buy = {
                     "type": mt5.ORDER_TYPE_BUY_LIMIT,
                     "sl": s_support,
                     "tp": media,
-                    "ORDER_TIME_SPECIFIED": fecha_cierre,
-                    "comment": "MR_B",
+                    "type_time":mt5.ORDER_TIME_SPECIFIED, #se debe agregar al diccionario el tipo de fecha de expiración
+                    "expiration": timestamp, #Se debe agregar el número entero en tiempo UNIX de la fecha de expiración
+                    "comment": "MR_oE",
                     "type_filling": mt5.ORDER_FILLING_IOC
 
                     }
