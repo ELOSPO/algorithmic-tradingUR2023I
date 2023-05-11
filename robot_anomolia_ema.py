@@ -1,5 +1,20 @@
+#Indicadores Técnicos
+
 import pandas as pd
 import numpy as np
+import pandas_ta as ta
+
+#https://github.com/twopirllc/pandas-ta
+
+df = pd.DataFrame()
+
+# Help about this, 'ta', extension
+help(df.ta)
+
+# List of all indicators
+df.ta.indicators()
+
+
 import MetaTrader5 as mt5
 import time
 import datetime
@@ -35,7 +50,8 @@ def enviar_operaciones(simbolo,tipo_operacion, precio_tp,precio_sl,volumen_op):
     orden_sl = {
                 "action": mt5.TRADE_ACTION_DEAL,
                 "symbol": simbolo,
-                #"price": mt5.symbol_info_tick(simbolo).ask,
+                "sl": precio_sl,
+                "tp":precio_tp,
                 "volume" : volumen_op,
                 "type" : tipo_operacion,
                 "magic": 202304,
@@ -62,51 +78,38 @@ def calculate_position_size(symbol, tradeinfo, per_to_risk):
     position_size = round((balance * risk_per_trade) / (ticks_at_risk * tick_value),2)
     
     return position_size
-    
-simbolo = 'EURUSD'
+
+data = extraer_datos('AUDCAD',10000,mt5.TIMEFRAME_M1)
+
+data['media_movil'] = ta.ema(data['close'],25)
+data['dif'] = data['close'] - data['media_movil']
+
+data['dif'].hist(bins=60)
+
+
+#Cada vez que supera la media movil abriría un short y
+#cuando está por debajo en long hacer trades cortos.
+
+#Mirar a partir de qué punto "voy a considerar que un dato es anómalo"
+
+punto_sup = data['dif'].quantile(0.75)
+punto_inf = data['dif'].quantile(0.25)
 
 while True:
-    datos = extraer_datos(simbolo,10,mt5.TIMEFRAME_M1)
+    data2 = extraer_datos('AUDCAD',1000,mt5.TIMEFRAME_M1)
+    data2['media_movil'] = ta.ema(data2['close'],25)
+    data2['dif'] = data2['close'] - data2['media_movil']
 
-    y = datos[['close']]
-    datos['minutos'] = range(10)
-    X = datos[['minutos']]
+    ultima_dif = data2['dif'].iloc[-1]
+    ultima_media = data2['media_movil'].iloc[-1]
+    last_close = data2['media_movil'].iloc[-1]
 
-    modelo = LinearRegression().fit(X,y)
-
-    pendiente = modelo.coef_
-
-    params = np.append(modelo.intercept_,modelo.coef_)
-    predictions = modelo.predict(X)
-
-    newX = pd.DataFrame({"Constant":np.ones(len(X))}).join(pd.DataFrame(X))
-    MSE = (np.sum((y-predictions)**2))/(len(newX)-len(newX.columns))
-    var_b = MSE[0]*(np.linalg.inv(np.dot(newX.T,newX)).diagonal())
-    sd_b = np.sqrt(var_b)
-    ts_b = params/ sd_b
-
-    p_values =[2*(1-stats.t.cdf(np.abs(i),(len(newX)-len(newX.columns)))) for i in ts_b]
-
-    sd_b = np.round(sd_b,3)
-    ts_b = np.round(ts_b,3)
-    p_values = np.round(p_values,3)
-
-    print(p_values[1])
-    print(pendiente)
-    tradeinfo = 0.003
-
-
-    if pendiente > 0 and p_values[1] < 0.9:
-        lotaje = calculate_position_size(simbolo, tradeinfo, 0.05)
-        enviar_operaciones(simbolo,mt5.ORDER_TYPE_BUY, 0,0,lotaje)
-    if pendiente < 0 and p_values[1] < 0.9:
-        lotaje = calculate_position_size(simbolo, tradeinfo, 0.05)
-        enviar_operaciones(simbolo,mt5.ORDER_TYPE_SELL, 0,0,lotaje)
+    if ultima_dif >= punto_sup:
+        enviar_operaciones('AUDCAD',mt5.ORDER_TYPE_SELL,ultima_media,last_close+0.003,0.05)
+    if ultima_dif <= punto_inf:
+        enviar_operaciones('AUDCAD',mt5.ORDER_TYPE_BUY,ultima_media,last_close+0.003,0.05)
 
     time.sleep(60)
 
-nombre = 67043467
-clave = 'Genttly.2022'
-servidor = 'RoboForex-ECN'
-path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
+
 
