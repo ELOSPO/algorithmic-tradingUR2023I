@@ -2,14 +2,7 @@ import pandas as pd
 import numpy as np
 import MetaTrader5 as mt5
 
-                                                         
-nombre = 67043467
-clave = 'Genttly.2022'
-servidor = 'RoboForex-ECN'
-path = r'C:\Program Files\MetaTrader 5 R7\terminal64.exe'
-        
-
-
+                                                        
 class Basic_funcs():
 
     def __init__(self,nombre, clave,servidor,path):
@@ -18,13 +11,13 @@ class Basic_funcs():
         self.servidor = servidor
         self.path = path
     
-    def extract_data(self,par,periodo,cantidad):
+    def extract_data(self,par:str,periodo:mt5,cantidad:int) -> pd.DataFrame:
         '''
         Función para extraer los datos de MT5 y convertitlos en un DataFrame
 
         # Parámetros 
         
-        - par: Activo a extraer
+        - par: Símbolo
         - periodo: M1, M5...etc
         - cantidad: Entero con el número de registros a extraer
 
@@ -35,9 +28,33 @@ class Basic_funcs():
         tabla['time']=pd.to_datetime(tabla['time'], unit='s')
 
         return tabla
+    
+    def obtener_ordenes_pendientes(self) -> pd.DataFrame:
+        '''
+        Función para obtener órdenes pendientes.
+        
+        '''
+        try:
+            ordenes = mt5.orders_get()
+            df = pd.DataFrame(list(ordenes), columns = ordenes[0]._asdict().keys())
+        except:
+            df = pd.DataFrame()
 
-    def open_operations(self,par,volumen,tipo_operacion,nombre_bot,sl= None,tp = None):
+        return df
 
+    def open_operations(self,par:str,volumen: float,tipo_operacion:mt5,nombre_bot:str,sl:float= None,tp:float = None) -> None:
+        '''
+        Función para abrir operaciones en mt5. Esta funciónpuede abrir operaciones sin Stop Loss y sin Take Profit, solo con stop loss, solo con 
+        take profit o con ámbos parámetros.
+
+        # Parámetros
+
+        - par: Símbolo a extraer
+        - volumen: Lotaje de la operación
+        - tipo_operacion: mt5.ORDER_TYPE_BUY o mt5.ORDER_TYPE_BUY
+        - nombre_bot: Nombre de la estrategia que abre la operación
+
+        '''
         if (sl == None) and (tp == None):
 
             orden = {
@@ -108,7 +125,14 @@ class Basic_funcs():
             print('Se ejecutó una',tipo_operacion, 'con un volumen de', volumen)
 
     
-    def close_all_open_operations(self,par = None):
+    def close_all_open_operations(self,par:str = None):
+        '''
+        Cierra todas las operaciones de un par seleccionado o todas las operaciones abiertas.
+
+        # Parámetros
+
+        - par: Símbolo 
+        '''
         
         df_open_positions = self.get_all_positions()
         len_d_pos = len(df_open_positions)
@@ -156,9 +180,9 @@ class Basic_funcs():
                     mt5.order_send(close_request)
 
     
-    def get_opened_positions(self,par = None):
+    def get_opened_positions(self,par:str = None) -> tuple:
         '''
-        Función auxiliar 1. Sirve para obtener las posiciones abiertas para cada uno de los pares
+        Función para obtener las posiciones abiertas para cada uno de los pares
         en cada timeframe
         
         '''
@@ -184,9 +208,9 @@ class Basic_funcs():
 
         return len_d_pos, df_pos_temp
 
-    def get_all_positions(self):
+    def get_all_positions(self) -> pd.DataFrame:
         '''
-        Función auxiliar 2. Sirve para obtener las posiciones abiertas para cada uno de los pares en cada timeframe
+        Función para obtener las posiciones abiertas para cada uno de los pares en cada timeframe
         '''
         try:
             mt5.initialize( login = self.nombre, server = self.servidor, password = self.clave, path = self.path)
@@ -200,7 +224,12 @@ class Basic_funcs():
         
         return df_pos
 
-    def send_to_breakeven(self,df_pos_temp:pd.DataFrame, perc_rec:float):
+    def send_to_breakeven(self,df_pos_temp:pd.DataFrame, perc_rec:float) -> None:
+        '''
+        Función para enviar a Break Even todas las posiciones
+
+
+        '''
         if df_pos_temp.empty:
             print('No hay operaciones aún')
         if not df_pos_temp.empty:
