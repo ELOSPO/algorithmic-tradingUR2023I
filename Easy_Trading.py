@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import MetaTrader5 as mt5
+from urllib.request import urlopen, Request
+from bs4 import BeautifulSoup
 
                                                         
 class Basic_funcs():
@@ -336,3 +338,55 @@ class Basic_funcs():
         position_size = round((balance * risk_per_trade) / (ticks_at_risk * tick_value),2)
 
         return position_size
+    
+    def get_today_calendar(self) -> pd.DataFrame:
+        """Regresa un Dataframe con la información de las noticias del día contiene las columnas del simbolo y la intensidad"""
+        
+        r = Request('https://es.investing.com/economic-calendar/', headers={'User-Agent': 'Mozilla/5.0'})
+        #r = Request('https://br.investing.com/economic-calendar/')
+        response = urlopen(r).read()
+        soup = BeautifulSoup(response, "html.parser")
+        table = soup.find_all(class_ = "js-event-item")
+
+        result = []
+        base = {}
+
+        for bl in table:
+            time = bl.find(class_ ="first left time js-time").text
+            # evento = bl.find(class_ ="left event").text
+            currency = bl.find(class_ ="left flagCur noWrap").text.split(' ')
+            intensity = bl.find_all(class_="left textNum sentiment noWrap")
+            id_hour = currency[1] + '_' + time
+
+            if not id_hour in base:
+                #base.update({id_hour : {'currency' : currency[1], 'time' : time,'intensity' : { "1": 0,"2": 0,"3": 0} } })
+                base.update({id_hour : {'currency' : currency[1], 'time' : time,'intensity' : 0 }})
+
+            #intencity = base[id_hour]['intensity']
+            intencity = 0
+
+
+            for intence in intensity:
+                _true = intence.find_all(class_="grayFullBullishIcon")
+                _false = intence.find_all(class_="grayEmptyBullishIcon")
+
+                if len(_true) == 1:
+                    #intencity['1'] += 1
+                    intencity = 1
+
+                elif len(_true) == 2:
+                    # intencity['2'] += 1
+                    intencity = 2
+
+                elif len(_true) == 3:
+                    #intencity['3'] += 1
+                    intencity = 3
+
+            base[id_hour].update({'intensity' : intencity})
+
+        for b in base:
+            result.append(base[b])
+
+        news = pd.DataFrame.from_records(result)
+
+        return news
