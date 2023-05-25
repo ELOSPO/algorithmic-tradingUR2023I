@@ -184,8 +184,7 @@ class Basic_funcs():
 
             mt5.order_send(orden)
             print('Se ejecutó una',tipo_operacion, 'con un volumen de', volumen)
-
-    
+   
     def close_all_open_operations(self,data:pd.DataFrame) -> None:
         '''
         Cierra todas las operaciones que estén contenidas en un dataframe.
@@ -232,8 +231,7 @@ class Basic_funcs():
                     'type_filling': mt5.ORDER_FILLING_FOK
                 }
                 mt5.order_send(close_request)
-
-    
+   
     def get_opened_positions(self,par:str = None) -> tuple:
         '''
         Función para obtener las posiciones abiertas para cada uno de los pares
