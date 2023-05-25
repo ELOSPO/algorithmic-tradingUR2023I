@@ -51,10 +51,10 @@ class Robots_Ur():
 
         if pendiente > 0 and p_values[1] < max_p_value:
             lotaje = bfs.calculate_position_size(simbolo, tradeinfo, 0.05)
-            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_BUY, 0,0)
+            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_BUY, 'reg_prodct')
         if pendiente < 0 and p_values[1] < max_p_value:
             lotaje = bfs.calculate_position_size(simbolo, tradeinfo, 0.05)
-            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_SELL, 0,0)
+            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_SELL, 'reg_prodct')
 
     def handler_robot_regresion(self,time_frame,simbolo,cantidad,max_p_value):
 
