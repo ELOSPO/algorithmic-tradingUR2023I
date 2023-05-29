@@ -1,6 +1,6 @@
 @echo off
 
-python .\llamada_regresion.py
+python .\ejecutar_robot_desde_github.py
 
 :End
 cmd/k

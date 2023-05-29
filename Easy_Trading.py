@@ -390,3 +390,29 @@ class Basic_funcs():
         news = pd.DataFrame.from_records(result)
 
         return news
+    
+    def get_data_for_bt(self,timeframe,symbol,cantidad):
+
+        mt5.initialize( login = self.nombre, server = self.servidor, password = self.clave, path = self.path)
+        rates = mt5.copy_rates_from_pos(symbol, timeframe, 0, cantidad)
+        rates_frame = pd.DataFrame(rates)
+        rates_frame['time']=pd.to_datetime(rates_frame['time'], unit='s')
+        data = rates_frame.copy()
+        data = data.iloc[:,[0,1,2,3,4,5,7]]
+        data.columns = ['time','Open','High','Low','Close','Volume','OpenInterest']
+        data = data.set_index('time')
+
+        return data
+    
+    def info_account(self) -> tuple:
+
+        '''Función que retorna una tupla con el balance, el profit actual, la equidad y el margen libre de la cuenta'''
+
+        mt5.initialize(path = self.path, login = self.nombre,password = self.clave, server= self.servidor)
+        cuentaDict = mt5.account_info()._asdict()
+        balance = cuentaDict["balance"]
+        profit_account = cuentaDict["profit"]
+        equity = cuentaDict["equity"]
+        free_margin = cuentaDict["margin_free"]
+
+        return balance, profit_account, equity, free_margin
