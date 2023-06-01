@@ -75,4 +75,54 @@ stats_2 = backtesting_2.run()
 #Acceder a los trades
 stats_2._trades
 
-backtesting_2.plot()       
+backtesting_2.plot()  
+
+class Estrategia_deltas(Strategy):
+    rango_tp = 0.0015
+
+    def init(self):
+        self.sls = self.I(lambda: np.repeat(np.nan,len(self.data)), name = 'sls')
+        self.prices = self.I(lambda: np.repeat(np.nan,len(self.data)), name = 'sls')
+        
+
+    def next(self):
+
+        if len(self.data.Close) > 3:
+            
+            self.prices = self.data.Close
+
+            self.delta1 = self.prices[-1] - self.prices[-2]
+            self.delta2 = self.prices[-2] - self.prices[-3]
+            
+            # print(self.delta1)
+            # print(self.delta2)
+            self.sl = self.prices[-3]
+
+            if (self.delta1 > 0) and (self.delta2 > 0):
+                # self.position.close()
+                self.buy()
+                self.buy(sl = self.sl, tp= self.prices[-1] + self.rango_tp, size = 0.01)
+            
+            if (self.delta1 < 0) and (self.delta2 < 0):
+                self.position.close()
+                self.sell(sl = self.sl, tp= self.prices[-1] - self.rango_tp,size = 0.01)
+                # self.sell(sl = self.sl)
+
+            
+data = bfs.get_data_for_bt(mt5.TIMEFRAME_M1,'EURUSD',10000)
+backtesting_3 = Backtest(data,Estrategia_deltas,cash = 1_000)
+
+stats_3 = backtesting_3.run()
+backtesting_3.plot() 
+
+stats_3, hm = backtesting_3.optimize(rango_tp = [0.0005,0.001,0.001,0.0015],
+                                     maximize = 'Return [%]', return_heatmap = True)
+for valor in [30000,40000,50000,60000]:
+    data = bfs.get_data_for_bt(mt5.TIMEFRAME_M1,'EURUSD',valor)
+    data2 = data.head(10000)
+    backtesting_4 = Backtest(data2,Estrategia_deltas,cash = 10_000)
+    stats_4 = backtesting_4.run()
+
+    print('############################################')
+
+    print(stats_4)
