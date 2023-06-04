@@ -29,16 +29,16 @@ class Strategy_reg(Strategy):
         if len(self.data.Close) > self.cantidad:
             self.reg_ind = reg_class.bot_regresion(self.prices,self.cantidad,self.max_p_value)
             if self.reg_ind == 1:
-                self.buy(tp = self.prices[-1] + 0.0015,sl = self.prices[-1] - 0.0015, size = 0.01)
+                self.buy(tp = self.prices[-1] + 0.0015,sl = self.prices[-1] - 0.0005, size = 1)
             if self.reg_ind  == 0:
 
-                self.sell(tp = self.prices[-1] - 0.0015, sl = self.prices[-1] + 0.0015, size = 0.01)
+                self.sell(tp = self.prices[-1] - 0.0015, sl = self.prices[-1] + 0.0005, size = -1)
     
 data = bfs.get_data_for_bt(mt5.TIMEFRAME_M15,'EURUSD',3000)
 bt = Backtest(data,Strategy_reg,cash=1_000)
 stats1 = bt.run()
 bt.plot()
-
+stats1
 stats_3, hm = bt.optimize(cantidad = [5,7,10,15,20],
                         max_p_value = [0.005,0.01,0.05],
                         return_heatmap= True,

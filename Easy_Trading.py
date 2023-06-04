@@ -3,7 +3,7 @@ import numpy as np
 import MetaTrader5 as mt5
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
-
+from datetime import datetime
                                                         
 class Basic_funcs():
 
@@ -416,3 +416,17 @@ class Basic_funcs():
         free_margin = cuentaDict["margin_free"]
 
         return balance, profit_account, equity, free_margin
+
+    def get_data_from_dates(self,year_ini,month_ini,day_ini,year_fin,month_fin,day_fin,symbol,timeframe, for_bt = False) -> pd.DataFrame():
+        from_date = datetime(year_ini, month_ini, day_ini)
+        to_date = datetime(year_fin, month_fin, day_fin)
+        rates = mt5.copy_rates_range(symbol, timeframe from_date, to_date)
+        rates_frame = pd.DataFrame(rates)
+        rates_frame['time']=pd.to_datetime(rates_frame['time'], unit='s')
+
+        if for_bt == True:
+            rates_frame = rates_frame.iloc[:,[0,1,2,3,4,5,7]]
+            rates_frame.columns = ['time','Open','High','Low','Close','Volume','OpenInterest']
+            rates_frame = rates_frame.set_index('time')
+        
+        return rates_frame
