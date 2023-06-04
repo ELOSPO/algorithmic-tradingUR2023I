@@ -420,7 +420,7 @@ class Basic_funcs():
     def get_data_from_dates(self,year_ini,month_ini,day_ini,year_fin,month_fin,day_fin,symbol,timeframe, for_bt = False) -> pd.DataFrame():
         from_date = datetime(year_ini, month_ini, day_ini)
         to_date = datetime(year_fin, month_fin, day_fin)
-        rates = mt5.copy_rates_range(symbol, timeframe from_date, to_date)
+        rates = mt5.copy_rates_range(symbol, timeframe, from_date, to_date)
         rates_frame = pd.DataFrame(rates)
         rates_frame['time']=pd.to_datetime(rates_frame['time'], unit='s')
 
