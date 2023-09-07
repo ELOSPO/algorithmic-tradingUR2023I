@@ -24,7 +24,7 @@ class Robots_Ur():
         y = close_price
         mins = pd.Series(range(1,cantidad+1))
         X_df = pd.DataFrame(mins,columns= ['x'])
-        print(X_df)
+        # print(X_df)
         X = X_df[['x']]
 
         modelo = LinearRegression().fit(X,y)
@@ -46,8 +46,8 @@ class Robots_Ur():
         ts_b = np.round(ts_b,3)
         p_values = np.round(p_values,3)
 
-        print(p_values[1])
-        print(pendiente)
+        # print(p_values[1])
+        # print(pendiente)
         tradeinfo = 0.003
 
 

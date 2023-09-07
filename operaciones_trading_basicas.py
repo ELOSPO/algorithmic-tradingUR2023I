@@ -1,6 +1,90 @@
 import pandas as pd
 import MetaTrader5 as mt5
 
+# Clase Septiembre 6 del 2023
+
+nombre = 67043467
+clave = 'Genttly.2022'
+servidor = 'RoboForex-ECN'
+path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
+
+# realizar conexión con MT5
+mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
+
+#crear diccionario de órdenes
+orden = {
+            "action" : mt5.TRADE_ACTION_DEAL,
+            "type": mt5.ORDER_TYPE_BUY,
+            "symbol":"BTCUSD",
+            "volume":0.05,
+            "type_filling": mt5.ORDER_FILLING_IOC
+        }
+
+mt5.order_send(orden)
+
+#crear diccionario de órdenes con SL
+orden = {
+            "action" : mt5.TRADE_ACTION_DEAL,
+            "type": mt5.ORDER_TYPE_BUY,
+            "symbol":"BTCUSD",
+            "volume":0.05,
+            "type_filling": mt5.ORDER_FILLING_IOC,
+            "sl": 25689.01, 
+            "tp": 25929.08,
+            "comment": "primera_operación"
+        }
+
+mt5.order_send(orden)
+
+# 335476218
+# 335478650
+
+#Cerrar operación
+close_order = {
+                    "action": mt5.TRADE_ACTION_DEAL,
+                    "type": mt5.ORDER_TYPE_SELL,
+                    "symbol": "BTCUSD",
+                    "volume": 0.03,
+                    "position": 335481244,
+                    "type_filling": mt5.ORDER_FILLING_IOC
+              }
+
+mt5.order_send(close_order)
+
+orden = {
+            "action" : mt5.TRADE_ACTION_DEAL,
+            "type": mt5.ORDER_TYPE_BUY,
+            "symbol":"EURUSD",
+            "volume":0.05,
+            "type_filling": mt5.ORDER_FILLING_IOC
+        }
+
+#Abrir 1000 operaciones
+for i in range(1000): 
+    mt5.order_send(orden)
+
+#Cerrar mil operaciones
+ops_abiertas = mt5.positions_get()
+df_positions = pd.DataFrame(list(ops_abiertas), columns = ops_abiertas[0]._asdict().keys())
+
+
+lista_tickets = df_positions['ticket'].tolist()
+for ticket in lista_tickets:
+    close_order = {
+                    "action": mt5.TRADE_ACTION_DEAL,
+                    "type": mt5.ORDER_TYPE_SELL,
+                    "symbol": "EURUSD",
+                    "volume": 0.05,
+                    "position": ticket,
+                    "type_filling": mt5.ORDER_FILLING_IOC
+              }
+    mt5.order_send(close_order)
+    
+##################################################################
+
+import pandas as pd
+import MetaTrader5 as mt5
+
 nombre = 67043467
 clave = 'Genttly.2022'
 servidor = 'RoboForex-ECN'

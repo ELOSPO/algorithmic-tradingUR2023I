@@ -79,6 +79,8 @@ while True:
     params = np.append(modelo.intercept_,modelo.coef_)
     predictions = modelo.predict(X)
 
+    stats.coef_pval(modelo,X,y)
+
     newX = pd.DataFrame({"Constant":np.ones(len(X))}).join(pd.DataFrame(X))
     MSE = (np.sum((y-predictions)**2))/(len(newX)-len(newX.columns))
     var_b = MSE[0]*(np.linalg.inv(np.dot(newX.T,newX)).diagonal())
