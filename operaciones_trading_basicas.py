@@ -79,6 +79,63 @@ for ticket in lista_tickets:
                     "type_filling": mt5.ORDER_FILLING_IOC
               }
     mt5.order_send(close_order)
+
+
+###########################################Cerramos todas las operaciones ####################
+for i in range(len(lista_tickets)):
+    ticket = lista_tickets[i]
+    type_op1 = lista_tipos_ops[i]
+
+    if type_op1 == 0:
+        type_op_opuesta = mt5.ORDER_TYPE_SELL
+    elif type_op1 == 1:
+        type_op_opuesta = mt5.ORDER_TYPE_BUY
+
+
+    close_order = {
+                    "action": mt5.TRADE_ACTION_DEAL,
+                    "type": type_op_opuesta,
+                    "symbol": "EURUSD",
+                    "volume": 0.05,
+                    "position": ticket,
+                    "type_filling": mt5.ORDER_FILLING_IOC
+              }
+    mt5.order_send(close_order)
+
+
+##########################################Cerramos Operaciones con profit ####################
+
+ops_abiertas = mt5.positions_get()
+df_positions = pd.DataFrame(list(ops_abiertas), columns = ops_abiertas[0]._asdict().keys())
+
+#df_positions = df_positions[df_positions['profit'] > 0]
+df_positions = df_positions[df_positions['symbol'] == 'GBPUSD']
+
+lista_tickets = df_positions['ticket'].tolist()
+lista_tipos_ops = df_positions['type'].tolist()
+lista_simb_ops = df_positions['symbol'].tolist()
+
+###########################################Cerramos todas las operaciones ####################
+for i in range(len(lista_tickets)):
+    ticket = lista_tickets[i]
+    type_op1 = lista_tipos_ops[i]
+    symbol = lista_simb_ops[i]
+
+    if type_op1 == 0:
+        type_op_opuesta = mt5.ORDER_TYPE_SELL
+    elif type_op1 == 1:
+        type_op_opuesta = mt5.ORDER_TYPE_BUY
+
+
+    close_order = {
+                    "action": mt5.TRADE_ACTION_DEAL,
+                    "type": type_op_opuesta,
+                    "symbol": symbol,
+                    "volume": 0.05,
+                    "position": ticket,
+                    "type_filling": mt5.ORDER_FILLING_IOC
+              }
+    mt5.order_send(close_order)
     
 ##################################################################
 
@@ -216,4 +273,81 @@ for i in range(100):
             }
 
     mt5.order_send(orden)
+
+##############################################################
+#    Ordenes pendientes
+
+###### BUY STOP ######
+pendiente = {
+                "action": mt5.TRADE_ACTION_PENDING,
+                "type": mt5.ORDER_TYPE_BUY_STOP,
+                "price": mt5.symbol_info_tick('EURUSD').ask + 0.0005,
+                "symbol": "EURUSD",
+                "volume": 0.05,
+                "type_filling": mt5.ORDER_FILLING_IOC
+
+            }
+
+mt5.order_send(pendiente)
+
+###### SELL STOP ######
+pendiente = {
+                "action": mt5.TRADE_ACTION_PENDING,
+                "type": mt5.ORDER_TYPE_SELL_STOP,
+                "price": mt5.symbol_info_tick('EURUSD').ask - 0.0015,
+                "symbol": "EURUSD",
+                "volume": 0.05,
+                "type_filling": mt5.ORDER_FILLING_IOC
+
+            }
+
+mt5.order_send(pendiente)
+
+###### SELL LIMIT ######
+pendiente = {
+                "action": mt5.TRADE_ACTION_PENDING,
+                "type": mt5.ORDER_TYPE_SELL_LIMIT,
+                "price": mt5.symbol_info_tick('EURUSD').ask + 0.0015,
+                "symbol": "EURUSD",
+                "volume": 0.05,
+                "type_filling": mt5.ORDER_FILLING_IOC
+
+            }
+
+mt5.order_send(pendiente)
+
+###### BUY LIMIT ######
+pendiente = {
+                "action": mt5.TRADE_ACTION_PENDING,
+                "type": mt5.ORDER_TYPE_BUY_LIMIT,
+                "price": mt5.symbol_info_tick('EURUSD').ask - 0.0007,
+                "symbol": "EURUSD",
+                "volume": 0.05,
+                "type_filling": mt5.ORDER_FILLING_IOC
+
+            }
+
+mt5.order_send(pendiente)
+
+hist_ordenes = mt5.orders_get()
+df_orders = pd.DataFrame(list(hist_ordenes), columns=hist_ordenes[0]._asdict().keys())
+
+# 336608130
+
+request_remove = {
+                    "order": 336608130,
+                    "action": mt5.TRADE_ACTION_REMOVE
+
+                 }
+
+mt5.order_send(request_remove)
+
+request_modify = {
+                    "order": 336608382,
+                    "action": mt5.TRADE_ACTION_MODIFY,
+                    "price" : mt5.symbol_info_tick('EURUSD').ask - 0.0015
+
+                }
+
+mt5.order_send(request_modify)
 
