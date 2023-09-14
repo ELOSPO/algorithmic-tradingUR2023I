@@ -9,8 +9,8 @@ path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
 
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 
-def extraer_datos(simbolo,num_periodos):
-    rates = mt5.copy_rates_from_pos(simbolo,mt5.TIMEFRAME_M1,0,num_periodos)
+def extraer_datos(simbolo,num_periodos,timeframe):
+    rates = mt5.copy_rates_from_pos(simbolo,timeframe,0,num_periodos)
     tabla = pd.DataFrame(rates)
     tabla['time'] = pd.to_datetime(tabla['time'], unit = 's')
 
@@ -25,7 +25,7 @@ def enviar_operaciones(simbolo,tipo_operacion, precio_tp,precio_sl,volumen_op):
                 "type" : tipo_operacion,
                 "sl": precio_sl,
                 "tp": precio_tp,
-                "magic": 202304,
+                "magic": 202309,
                 "comment": 'Martingala',
                 "type_time": mt5.ORDER_TIME_GTC,
                 "type_filling": mt5.ORDER_FILLING_IOC
@@ -43,39 +43,51 @@ def calcular_operaciones_abiertas():
     
     return df_positions
 
+
+simb = 'BTCUSD'
+
 while True:
-    simb = 'BTCUSD'
-    datos_simbolo = extraer_datos(simb,300)
 
-    datos_simbolo['ma50'] = datos_simbolo['close'].rolling(200).mean()
+    datos_simbolo = extraer_datos( simb,300, mt5.TIMEFRAME_M1)
 
-    linea_ref = datos_simbolo['ma50'].iloc[299]
-    ultimo_precio = datos_simbolo['close'].iloc[299]
+    ultimo_cierre = datos_simbolo['close'].iloc[-1]
 
     df_operaciones = calcular_operaciones_abiertas()
-
     num_operaciones = len(df_operaciones)
-    print("El número de operaciones es ", num_operaciones )
-    print("El último precio es ",ultimo_precio)
-    print("La línea es ", linea_ref)
+
+    #######################################################################
+    #                   Calcular la media móvil                          #
+    #######################################################################
+
+    datos_simbolo['media_movil'] = datos_simbolo['close'].rolling(30).mean()
+
+    linea_ref = datos_simbolo['media_movil'].iloc[-1]
+
+    #######################################################################
+
+
+    print('Este es el número de operaciones actuales ',num_operaciones)
+    print('Este es el último cierre ', ultimo_cierre)
+    print('esta es la Media Móvil', linea_ref)
 
     if num_operaciones == 0 :
-        if ultimo_precio > linea_ref + 20.0:
-            enviar_operaciones(simb,mt5.ORDER_TYPE_SELL,  -100,mt5.symbol_info_tick(simb).bid + 500,0.01)
-        elif ultimo_precio < linea_ref - 20.0:
-             enviar_operaciones(simb,mt5.ORDER_TYPE_BUY, linea_ref ,mt5.symbol_info_tick(simb).ask - 500,0.01)
+        if ultimo_cierre <= linea_ref - 10.0 :
+            enviar_operaciones(simb,mt5.ORDER_TYPE_BUY,linea_ref,mt5.symbol_info_tick(simb).ask - 500,0.1)
+        elif ultimo_cierre >= linea_ref + 10.0 :
+            enviar_operaciones(simb,mt5.ORDER_TYPE_SELL,linea_ref,mt5.symbol_info_tick(simb).bid + 500,0.1)
         else:
             print('No se cumplieron las condiciones')
 
-    else:
+    elif num_operaciones > 0:
         if df_operaciones['profit'].iloc[-1] < 0:
             tipo_ultima_operacion = df_operaciones['type'].iloc[-1]
-            nuevo_volumen = df_operaciones['volume'].iloc[-1] + 0.02
-            print("La ultima peración es ", tipo_ultima_operacion)
-            if tipo_ultima_operacion == 1:
+            volumen_ultimo = df_operaciones['volume'].iloc[-1]
+            nuevo_volumne = volumen_ultimo*2
 
-                enviar_operaciones(simb,mt5.ORDER_TYPE_SELL, linea_ref,mt5.symbol_info_tick(simb).bid + 500,nuevo_volumen)
-            if tipo_ultima_operacion == 0:
-                enviar_operaciones(simb,mt5.ORDER_TYPE_BUY, linea_ref ,mt5.symbol_info_tick(simb).ask - 500,nuevo_volumen)
+            if tipo_ultima_operacion == 1:
+                enviar_operaciones(simb,mt5.ORDER_TYPE_SELL,linea_ref,mt5.symbol_info_tick(simb).bid + 500,nuevo_volumne)
+            elif tipo_ultima_operacion == 0:
+                enviar_operaciones(simb,mt5.ORDER_TYPE_BUY,linea_ref,mt5.symbol_info_tick(simb).ask - 500,nuevo_volumne)
+
 
     time.sleep(60)
