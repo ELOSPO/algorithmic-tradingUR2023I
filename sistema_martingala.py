@@ -10,9 +10,9 @@ path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 
 def extraer_datos(simbolo,num_periodos,timeframe):
-    rates = mt5.copy_rates_from_pos(simbolo,timeframe,0,num_periodos)
-    tabla = pd.DataFrame(rates)
-    tabla['time'] = pd.to_datetime(tabla['time'], unit = 's')
+    rates = mt5.copy_rates_from_pos(simbolo,timeframe,0,num_periodos) # Traer el diccionario des MT5
+    tabla = pd.DataFrame(rates) #Convertir el diccionario en un Dataframe
+    tabla['time'] = pd.to_datetime(tabla['time'], unit = 's') # Convertir la columna tiempo en timestamp
 
     return tabla
 
