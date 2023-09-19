@@ -1,15 +1,3 @@
-import pandas as pd
-import numpy as np
-import MetaTrader5 as mt5
-import time
-import datetime
-from datetime import timedelta
-
-nombre = 67043467
-clave = 'Genttly.2022'
-servidor = 'RoboForex-ECN'
-path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
-
 # ORDER_TIME_GTC
 
 # La orden se encontrará en la cola hasta que sea quitada
@@ -26,16 +14,18 @@ path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
 
 # La orden estará activa hasta las 23:59:59 del día indicado. Si la hora no se encuentra en la sesión comercial, la expiración tendrá lugar en la hora comercial más próxima.
 
-hoy = datetime.datetime.now()
-tiempo_expiracion = hoy + timedelta(days = 1)
+import pandas as pd
+import numpy as np
+import MetaTrader5 as mt5
+import time
+import datetime
+from datetime import timedelta
 
-tiempo_expiracion2 = datetime.datetime(tiempo_expiracion.year,tiempo_expiracion.month,tiempo_expiracion.day,0,0,0)
+nombre = 67043467
+clave = 'Genttly.2022'
+servidor = 'RoboForex-ECN'
+path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
 
-
-timestamp = int(tiempo_expiracion2.timestamp())
-
-# Imprimir el valor de tiempo UNIX
-print(timestamp)  # Salida: 1671222000.0
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 
 def obtener_ordenes_pendientes():
@@ -47,9 +37,9 @@ def obtener_ordenes_pendientes():
 
     return df
 
-def remover_operacion_pendiente(nom_est):
+def remover_operacion_pendiente():
     df = obtener_ordenes_pendientes()
-    df_estrategia = df[df['comment'] == nom_est]
+    df_estrategia = df.copy()
     ticket_list = df_estrategia['ticket'].unique().tolist()
     for ticket in ticket_list:
         close_pend_request = {
@@ -61,19 +51,53 @@ def remover_operacion_pendiente(nom_est):
         mt5.order_send(close_pend_request)
 
 def extraer_datos(simbolo,num_periodos,timeframe):
-    rates = mt5.copy_rates_from_pos(simbolo,timeframe,0,num_periodos)
-    tabla = pd.DataFrame(rates)
-    tabla['time'] = pd.to_datetime(tabla['time'], unit = 's')
-    
+    rates = mt5.copy_rates_from_pos(simbolo,timeframe,0,num_periodos) # Traer el diccionario des MT5
+    tabla = pd.DataFrame(rates) #Convertir el diccionario en un Dataframe
+    tabla['time'] = pd.to_datetime(tabla['time'], unit = 's') # Convertir la columna tiempo en timestamp
+
     return tabla
 
+def enviar_operaciones(simbolo,tipo_operacion, precio_tp,precio_sl,volumen_op):
+    orden_sl = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "symbol": simbolo,
+                #"price": mt5.symbol_info_tick(simbolo).ask,
+                "volume" : volumen_op,
+                "type" : tipo_operacion,
+                "sl": precio_sl,
+                "tp": precio_tp,
+                "magic": 202309,
+                "comment": 'Martingala',
+                "type_time": mt5.ORDER_TIME_GTC,
+                "type_filling": mt5.ORDER_FILLING_IOC
+                }
+
+    mt5.order_send(orden_sl)
+
+def calcular_operaciones_abiertas():
+    try:
+        open_positions = mt5.positions_get()
+        df_positions = pd.DataFrame(list(open_positions), columns = open_positions[0]._asdict().keys())
+        df_positions['time'] = pd.to_datetime(df_positions['time'], unit = 's')
+    except:
+        df_positions = pd.DataFrame()
+    
+    return df_positions
+
+#cálculo de los tiempos de expiración de las operaciones
+hoy = datetime.datetime.now()
+tiempo_expiracion = hoy + timedelta(days=1) + timedelta(hours=5)
+tiempo_expiracion2 = datetime.datetime(tiempo_expiracion.year,tiempo_expiracion.month,tiempo_expiracion.day,0,0,0)
+timestamp = int(tiempo_expiracion2.timestamp())
+
 def calculate_pivot_points(df):
+
     high = df['high'].iloc[0]
     low = df['low'].iloc[0]
     close = df['close'].iloc[0]
 
     pivot = (high + low + close)/3
-    
+
     f_support = 2*pivot -high
     s_support = pivot - (high-low)
     t_support = low - 2*(high - pivot)
@@ -87,150 +111,60 @@ def calculate_pivot_points(df):
     return f_support, s_support, t_support, f_resistance, s_resistance, t_resistance, media
 
 simbolo = 'EURUSD'
+
 data = extraer_datos(simbolo,2,mt5.TIMEFRAME_D1)
 
 data = data.head(1)
 
-
 f_support, s_support, t_support, f_resistance, s_resistance, t_resistance, media = calculate_pivot_points(data)
 
-# Estrategia de Mean Reversion
-#Así se envía la operación pendiente
-pending_order_buy = {
-                    "action": mt5.TRADE_ACTION_PENDING,
+def enviar_operaciones_pendientes(trade_action,simbolo,volume,price,type_op,sl,tp,expirationdate):
+    pending_order = {
+                    "action": trade_action,
                     "symbol": simbolo,
-                    "volume": 0.05,
-                    "price": f_support,
-                    "type": mt5.ORDER_TYPE_BUY_LIMIT,
-                    "sl": s_support,
-                    "tp": media,
+                    "volume": volume,
+                    "price": price,
+                    "type": type_op,
+                    "sl": sl,
+                    "tp": tp,
                     "type_time":mt5.ORDER_TIME_SPECIFIED, #se debe agregar al diccionario el tipo de fecha de expiración
-                    "expiration": timestamp, #Se debe agregar el número entero en tiempo UNIX de la fecha de expiración
-                    "comment": "MR_oE",
+                    "expiration": expirationdate, #Se debe agregar el número entero en tiempo UNIX de la fecha de expiración
+                    "comment": "Pivot",
                     "type_filling": mt5.ORDER_FILLING_IOC
 
                     }
+    
+    mt5.order_send(pending_order)
 
-mt5.order_send(pending_order_buy)
+    ################################# Enviar Órdenes Estrategia MR ############################################
 
-pending_order_sell = {
-                    "action": mt5.TRADE_ACTION_PENDING,
-                    "symbol": simbolo,
-                    "volume": 0.05,
-                    "price": f_resistance,
-                    "type": mt5.ORDER_TYPE_SELL_LIMIT,
-                    "sl": s_resistance,
-                    "tp": media,
-                    "comment": "MR_S",
-                    "type_filling": mt5.ORDER_FILLING_IOC
+enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,f_support,mt5.ORDER_TYPE_BUY_LIMIT,s_support,media,timestamp)
+enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,f_resistance,mt5.ORDER_TYPE_SELL_LIMIT,s_resistance,media,timestamp)
 
-                    }
-mt5.order_send(pending_order_sell)
+enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,s_resistance,mt5.ORDER_TYPE_BUY_STOP,f_resistance,t_resistance,timestamp)
+enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,s_support,mt5.ORDER_TYPE_SELL_STOP,f_support,t_support,timestamp)
 
-# Estrategia de Breakthrough
+lista_simbolos = ['XAUUSD','GBPJPY','USDCAD','USDJPY','BTCUSD','GBPUSD']
 
-pending_order_buy_B = {
-                    "action": mt5.TRADE_ACTION_PENDING,
-                    "symbol": simbolo,
-                    "volume": 0.05,
-                    "price": s_resistance,
-                    "type": mt5.ORDER_TYPE_BUY_STOP,
-                    "sl": f_resistance,
-                    "tp": t_resistance, # (s_resistance - f_resistance)*2 + s_resistance
-                    "comment": "MR_B",
-                    "type_filling": mt5.ORDER_FILLING_IOC
-
-                    }
-
-mt5.order_send(pending_order_buy_B)
-
-pending_order_sell_B = {
-                    "action": mt5.TRADE_ACTION_PENDING,
-                    "symbol": simbolo,
-                    "volume": 0.05,
-                    "price": s_support,
-                    "type": mt5.ORDER_TYPE_SELL_STOP,
-                    "sl": f_support,
-                    "tp": t_support,
-                    "comment": "MR_S",
-                    "type_filling": mt5.ORDER_FILLING_IOC
-
-                    }
-mt5.order_send(pending_order_sell_B)
-
-list_symbols = ['.USTECHCash','EURUSD', 'XAUUSD', 'GBPJPY', 'USDJPY', 'GBPUSD', 'AAPL', 'BTCUSD', 'ETHUSD', 'XAGUSD','GBPNZD']
-for simbolo in list_symbols:
+for simbolo in lista_simbolos:
     data = extraer_datos(simbolo,2,mt5.TIMEFRAME_D1)
-
     data = data.head(1)
-
-
     f_support, s_support, t_support, f_resistance, s_resistance, t_resistance, media = calculate_pivot_points(data)
+    enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,f_support,mt5.ORDER_TYPE_BUY_LIMIT,s_support,media,timestamp)
+    enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,f_resistance,mt5.ORDER_TYPE_SELL_LIMIT,s_resistance,media,timestamp)
 
-    # Estrategia de Mean Reversion
+    enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,s_resistance,mt5.ORDER_TYPE_BUY_STOP,f_resistance,t_resistance,timestamp)
+    enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,s_support,mt5.ORDER_TYPE_SELL_STOP,f_support,t_support,timestamp)
 
-    pending_order_buy = {
-                        "action": mt5.TRADE_ACTION_PENDING,
-                        "symbol": simbolo,
-                        "volume": 0.05,
-                        "price": f_support,
-                        "type": mt5.ORDER_TYPE_BUY_LIMIT,
-                        "sl": s_support,
-                        "tp": media,
-                        "comment": "MR_B",
-                        "type_filling": mt5.ORDER_FILLING_IOC
+    data = extraer_datos(simbolo,2,mt5.TIMEFRAME_W1)
+    data = data.head(1)
+    f_support, s_support, t_support, f_resistance, s_resistance, t_resistance, media = calculate_pivot_points(data)
+    enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,f_support,mt5.ORDER_TYPE_BUY_LIMIT,s_support,media,timestamp)
+    enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,f_resistance,mt5.ORDER_TYPE_SELL_LIMIT,s_resistance,media,timestamp)
 
-                        }
-
-    mt5.order_send(pending_order_buy)
-
-    pending_order_sell = {
-                        "action": mt5.TRADE_ACTION_PENDING,
-                        "symbol": simbolo,
-                        "volume": 0.05,
-                        "price": f_resistance,
-                        "type": mt5.ORDER_TYPE_SELL_LIMIT,
-                        "sl": s_resistance,
-                        "tp": media,
-                        "comment": "MR_S",
-                        "type_filling": mt5.ORDER_FILLING_IOC
-
-                        }
-    mt5.order_send(pending_order_sell)
-
-    # Estrategia de Breakthrough
-
-    pending_order_buy_B = {
-                        "action": mt5.TRADE_ACTION_PENDING,
-                        "symbol": simbolo,
-                        "volume": 0.05,
-                        "price": s_resistance,
-                        "type": mt5.ORDER_TYPE_BUY_STOP,
-                        "sl": f_resistance,
-                        "tp": t_resistance, # (s_resistance - f_resistance)*2 + s_resistance
-                        "comment": "MR_B",
-                        "type_filling": mt5.ORDER_FILLING_IOC
-
-                        }
-
-    mt5.order_send(pending_order_buy_B)
-
-    pending_order_sell_B = {
-                        "action": mt5.TRADE_ACTION_PENDING,
-                        "symbol": simbolo,
-                        "volume": 0.05,
-                        "price": s_support,
-                        "type": mt5.ORDER_TYPE_SELL_STOP,
-                        "sl": f_support,
-                        "tp": t_support,
-                        "comment": "MR_S",
-                        "type_filling": mt5.ORDER_FILLING_IOC
-
-                        }
-    mt5.order_send(pending_order_sell_B)
+    enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,s_resistance,mt5.ORDER_TYPE_BUY_STOP,f_resistance,t_resistance,timestamp)
+    enviar_operaciones_pendientes(mt5.TRADE_ACTION_PENDING,simbolo,0.05,s_support,mt5.ORDER_TYPE_SELL_STOP,f_support,t_support,timestamp)
 
 
-
-
-remover_operacion_pendiente('SebasO')
+remover_operacion_pendiente()
 
