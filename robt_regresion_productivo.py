@@ -7,6 +7,7 @@ import datetime
 from datetime import timedelta
 from scipy import stats
 from sklearn.linear_model import LinearRegression
+import pandas_ta as ta
 
 nombre = 67043467
 clave = 'Genttly.2022'
@@ -55,6 +56,27 @@ class Robots_Ur():
         if pendiente < 0 and p_values[1] < max_p_value:
             lotaje = bfs.calculate_position_size(simbolo, tradeinfo, 0.05)
             bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_SELL, 0,0)
+    
+    def robot_anomalia(self,simbolo,periodo,lot_size,veces_sigma,periodo_ema):
+
+        data = bfs.extract_data(simbolo,periodo,1000)
+        data['ema'] = ta.ema(data['close'],periodo_ema)
+        # Calculo de la diferencia entre el precio y la ema
+        data['diff_media'] = data['close'] - data['ema']
+        #Cálculo de la desviación estándar
+        sigma = data['diff_media'].std()
+        #Obtener el último precio
+        last_price = data['close'].iloc[0]
+
+        #Guardo en una variable la última diferencia
+        ultima_diferencia = data['diff_media'].iloc[-1]
+
+        if ultima_diferencia > sigma*veces_sigma:
+            bfs.open_operations(simbolo,lot_size,mt5.ORDER_TYPE_SELL,'Anomalía')
+        elif ultima_diferencia < sigma*veces_sigma:
+            bfs.open_operations(simbolo,lot_size,mt5.ORDER_TYPE_BUY,'Anomalía')
+        else:
+            print('No se cumplieron las condiciones de entrada')
 
         
 

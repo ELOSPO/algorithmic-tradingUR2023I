@@ -12,16 +12,23 @@
 #pito (clacson)
 #Frenar
 
-
 class Creacion_autos():
-    def __init__(self,marca,modelo,fabricante) :
-        print(f'inicializando el auto de marca {marca} y modelo {modelo}')
-        self.referencia = marca
-        self.fabricante = fabricante
-        self.modelo = modelo
-
+    def __init__(self,modelo,fabricante,cilindraje):
+        self.referencia = modelo
+        self.fabricante = fabricante,
+        self.cilindraje = cilindraje
+    
     def arrancar(self):
-        print(f'el auto {self.fabricante} hizo brrruuum')
-        self.mensaje = f'el auto {self.fabricante} hizo brrruuum'
+        if self.cilindraje > 4000:
+            print(f'El auto {self.fabricante} hizo bruuuuuuuuuuuuuum!')
+        else:
+            print(f'El auto {self.fabricante} hizobrum brum brum brum  bruuuuuuuuuuuuuum!')
+
+
+# auto_1 = Creacion_autos('Spider','Ferrari',6000) 
+# auto_2 = Creacion_autos('Twingo','Reanult',1000)
+
+# auto_1.arrancar()
+# auto_2.arrancar()
         
 
