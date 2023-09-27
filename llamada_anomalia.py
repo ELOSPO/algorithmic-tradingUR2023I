@@ -4,15 +4,20 @@ import MetaTrader5 as mt5
 from robt_regresion_productivo import Robots_Ur
 import time
 
-lista_simbolos = ['TSLA','XAUUSD','EURGBP']
+password = 123
 
-robot = Robots_Ur()
+user_pass = input('Ingrese contraseña maestra: ')
 
-while True:
-    for simbolo in lista_simbolos:
-        robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M1,0.5,2,30)
-        robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M5,0.1,3,100)
+if user_pass == password:
+    lista_simbolos = ['TSLA','XAUUSD','EURGBP']
     
-    time.sleep(60)
+    robot = Robots_Ur()
+    
+    while True:
+        for simbolo in lista_simbolos:
+            robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M1,0.5,2,30)
+            robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M5,0.1,3,100)
+        
+        time.sleep(60)
 
 
