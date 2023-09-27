@@ -63,7 +63,6 @@ for num in lista_numeros:
 for posicion in range(len(lista_numeros)):
     print(lista_numeros[posicion])
 
-############### If else elif ######################
 
 for numero in lista_numeros:
     if (numero == 2) or (numero == 4):
