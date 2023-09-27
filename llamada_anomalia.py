@@ -8,7 +8,7 @@ password = 123
 
 user_pass = input('Ingrese contraseña maestra: ')
 
-if user_pass == password:
+if int(user_pass) == password:
     lista_simbolos = ['TSLA','XAUUSD','EURGBP']
 
     robot = Robots_Ur()
