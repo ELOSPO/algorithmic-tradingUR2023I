@@ -16,7 +16,7 @@ path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
 nombre = input('Ingrese su login: ')
 clave = input('Ingrese su contraseña: ')
 
-bfs = Basic_funcs(nombre, clave, servidor, path)
+bfs = Basic_funcs(nombre, str(clave), servidor, path)
 
 
 class Robots_Ur():
