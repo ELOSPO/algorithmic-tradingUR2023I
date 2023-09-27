@@ -6,21 +6,18 @@ import time
 
 password = 123
 
-user_pass = input('Ingrese contraseña maestra: ')
+# user_pass = input('Ingrese contraseña maestra: ')
 
-if user_pass == password:
-    lista_simbolos = ['TSLA','XAUUSD','EURGBP']
+# if user_pass == password:
+lista_simbolos = ['TSLA','XAUUSD','EURGBP']
+robot = Robots_Ur()
+while True:
+    for simbolo in lista_simbolos:
+        robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M1,0.5,2,30)
+        robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M5,0.1,3,100)
+    time.sleep(60)
 
-    robot = Robots_Ur()
-
-    while True:
-        for simbolo in lista_simbolos:
-            robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M1,0.5,2,30)
-            robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M5,0.1,3,100)
-
-        time.sleep(60)
-
-else: 
-    print("Contraseña no válida, comuniquese con el administrador")
+# else: 
+#     print("Contraseña no válida, comuniquese con el administrador")
 
 
