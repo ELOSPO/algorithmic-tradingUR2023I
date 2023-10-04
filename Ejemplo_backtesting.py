@@ -42,7 +42,46 @@ stats_1._trades
 
 backtesting_1.plot()
 
-# ####################################################################
+performance_real = (1.04631 - 1.07866 )/1.04631
+strategy_return = stats_1['Return [%]']
+alpha = strategy_return - performance_real
+
+data_2 = bfs.get_data_from_dates(2023,7,23,2023,7,27,'EURUSD',mt5.TIMEFRAME_M15,True)
+data_3 = bfs.get_data_from_dates(2023,3,20,2023,3,24,'EURUSD',mt5.TIMEFRAME_M15,True)
+data_4 = bfs.get_data_from_dates(2023,4,17,2023,4,21,'EURUSD',mt5.TIMEFRAME_M15,True)
+data_5 = bfs.get_data_from_dates(2023,6,12,2023,6,16,'EURUSD',mt5.TIMEFRAME_M15,True)
+
+# ####################################################################################
+
+class Estrategia_simple_rsi(Strategy):
+
+    lim_sup_rsi = 80
+    lim_inf_rsi = 20
+    rsi_period = 14
+
+    def init(self):
+        self.prices_close = self.data.Close
+        self.rsi = self.I(ta.rsi,pd.Series(self.prices_close),self.rsi_period)
+
+    def next(self):
+        if len(self.prices_close) > self.rsi_period:
+            if self.rsi > self.lim_sup_rsi:
+                self.position.close()
+                self.sell()
+            elif self.rsi < self.lim_inf_rsi:
+                self.position.close()
+                self.buy()
+
+data_5 = bfs.get_data_from_dates(2023,1,1,2023,9,20,'EURUSD',mt5.TIMEFRAME_M15,True)
+
+backtesting_5 = Backtest(data_5,Estrategia_simple_rsi,cash=10_000)
+stats_5 = backtesting_5.run()
+
+stats_5, hm = backtesting_5.optimize(lim_sup_rsi = [70,75,80,85,95],
+                                     lim_inf_rsi = [30,25,20,10,5],
+                                     maximize= 'Profit Factor', return_heatmap= True)
+
+##############################################################################################
 
 class Estrategia_media_rsi(Strategy):
 

@@ -79,12 +79,24 @@ def calculate_position_size(symbol, tradeinfo, per_to_risk):
     
     return position_size
 
-data = extraer_datos('AUDCAD',10000,mt5.TIMEFRAME_M1)
+data = extraer_datos('AUDJPY',10000,mt5.TIMEFRAME_M1)
 
 data['media_movil'] = ta.ema(data['close'],25)
 data['dif'] = data['close'] - data['media_movil']
 
 data['dif'].hist(bins=60)
+data['std'] = ta.stdev(data['close'],20)
+data['estoc1'] = ta.stochrsi(data['close'],70,30)['STOCHRSId_70_30_3_3']
+
+data['std'].plot()
+data['std'].hist(bins = 40)
+
+data['estoc1'].plot()
+data['estoc1'].hist(bins = 40)
+
+data['std'].mean()*3/2
+
+
 
 
 #Cada vez que supera la media movil abriría un short y
@@ -94,6 +106,8 @@ data['dif'].hist(bins=60)
 
 punto_sup = data['dif'].quantile(0.75)
 punto_inf = data['dif'].quantile(0.25)
+
+
 
 while True:
     data2 = extraer_datos('AUDCAD',1000,mt5.TIMEFRAME_M1)
