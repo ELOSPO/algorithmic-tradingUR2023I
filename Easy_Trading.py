@@ -13,7 +13,7 @@ class Basic_funcs():
         self.servidor = servidor
         self.path = path
     
-    def modify_orders(self, symb: str,ticket:int,stop_loss:float = None,take_profit:float = None,type_order = mt5.ORDER_TYPE_BUY) -> None:
+    def modify_orders(self, symb: str,ticket:int,stop_loss:float = None,take_profit:float = None,type_order = mt5.ORDER_TYPE_BUY,type_fill=mt5.ORDER_FILLING_FOK) -> None:
 
         if (stop_loss != None) and (take_profit == None): 
             modify_order_request = {
@@ -24,7 +24,7 @@ class Basic_funcs():
                 'type': type_order,
                 'sl': stop_loss,
                 'type_time': mt5.ORDER_TIME_GTC,
-                'type_filling': mt5.ORDER_FILLING_FOK
+                'type_filling': type_fill
                                     }
 
             mt5.order_send(modify_order_request)
@@ -38,7 +38,7 @@ class Basic_funcs():
             'type': type_order,
             'tp': take_profit,
             'type_time': mt5.ORDER_TIME_GTC,
-            'type_filling': mt5.ORDER_FILLING_FOK
+            'type_filling': type_fill
                                     }
 
             mt5.order_send(modify_order_request)
@@ -53,7 +53,7 @@ class Basic_funcs():
             'tp': take_profit,
             'sl': stop_loss,
             'type_time': mt5.ORDER_TIME_GTC,
-            'type_filling': mt5.ORDER_FILLING_FOK
+            'type_filling': type_fill
                                     }
 
             mt5.order_send(modify_order_request)
@@ -105,7 +105,7 @@ class Basic_funcs():
 
             mt5.order_send(close_pend_request)
 
-    def open_operations(self,par:str,volumen: float,tipo_operacion:mt5,nombre_bot:str,sl:float= None,tp:float = None) -> None:
+    def open_operations(self,par:str,volumen: float,tipo_operacion:mt5,nombre_bot:str,sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK) -> None:
         '''
         Función para abrir operaciones en mt5. Esta funciónpuede abrir operaciones sin Stop Loss y sin Take Profit, solo con stop loss, solo con 
         take profit o con ámbos parámetros.
@@ -116,6 +116,7 @@ class Basic_funcs():
         - volumen: Lotaje de la operación
         - tipo_operacion: mt5.ORDER_TYPE_BUY o mt5.ORDER_TYPE_BUY
         - nombre_bot: Nombre de la estrategia que abre la operación
+        - type_fill: Política de ejecución de las órdenes FILLING_FOK o FILLING_IOC
 
         '''
         if (sl == None) and (tp == None):
@@ -128,7 +129,7 @@ class Basic_funcs():
             "magic": 202204,
             "comment": nombre_bot,
             "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": mt5.ORDER_FILLING_FOK
+            "type_filling": type_fill
 
             }
 
@@ -146,7 +147,7 @@ class Basic_funcs():
             "magic": 202204,
             "comment": nombre_bot,
             "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": mt5.ORDER_FILLING_FOK
+            "type_filling": type_fill
 
             }
 
@@ -163,7 +164,7 @@ class Basic_funcs():
             "magic": 202204,
             "comment": nombre_bot,
             "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": mt5.ORDER_FILLING_FOK
+            "type_filling": type_fill
 
             }
 
@@ -180,7 +181,7 @@ class Basic_funcs():
             "magic": 202204,
             "comment": nombre_bot,
             "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": mt5.ORDER_FILLING_FOK
+            "type_filling": type_fill
 
             }
 
