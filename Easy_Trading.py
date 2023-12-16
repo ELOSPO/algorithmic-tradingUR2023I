@@ -432,7 +432,9 @@ class Basic_funcs():
         
         return rates_frame
     
-    def send_pending_order(self,symbol,volume,price,type_op,expirationdate,type_fill,sl=None,tp = None):
+    def send_pending_order(self,symbol:str,volume:float,price:float,type_op:mt5,expirationdate,type_fill:mt5,sl:float=None,tp:float = None):
+
+        '''Función apra enviar órdenes pendientes. Esta función siempre debe ser usada con un expiration date'''
 
         if (sl != None ) and (tp != None):
             
