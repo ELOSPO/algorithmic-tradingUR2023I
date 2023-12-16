@@ -89,7 +89,7 @@ class Basic_funcs():
 
         return df
     
-    def remover_operacion_pendiente(self,nom_est:str) -> None:
+    def remover_operacion_pendiente(self,nom_est:str,type_fill:mt5) -> None:
         '''
         Función para remover las órdenes pendientes de una estrategia particular
         '''
@@ -100,7 +100,7 @@ class Basic_funcs():
             close_pend_request = {
                                     "action": mt5.TRADE_ACTION_REMOVE,
                                     "order": ticket,
-                                    "type_filling": mt5.ORDER_FILLING_IOC
+                                    "type_filling": type_fill
             }
 
             mt5.order_send(close_pend_request)
@@ -431,3 +431,76 @@ class Basic_funcs():
             rates_frame = rates_frame.set_index('time')
         
         return rates_frame
+    
+    def send_pending_order(self,symbol,volume,price,type_op,expirationdate,type_fill,sl=None,tp = None):
+
+        if (sl != None ) and (tp != None):
+            
+            pending_order = {
+                            "action":mt5.TRADE_ACTION_PENDING,
+                            "symbol": symbol,
+                            "volume": volume,
+                            "price": price,
+                            "type": type_op,
+                            "sl": sl,
+                            "tp": tp,
+                            "type_time":mt5.ORDER_TIME_SPECIFIED, 
+                            "expiration": expirationdate, 
+                            "comment": "Pivot",
+                            "type_filling": type_fill
+
+                            }
+
+            mt5.order_send(pending_order)
+
+        elif (sl != None) and ( tp == None):
+
+            pending_order = {
+                            "action":mt5.TRADE_ACTION_PENDING,
+                            "symbol": symbol,
+                            "volume": volume,
+                            "price": price,
+                            "type": type_op,
+                            "sl": sl,
+                            "type_time":mt5.ORDER_TIME_SPECIFIED, 
+                            "expiration": expirationdate, 
+                            "comment": "Pivot",
+                            "type_filling": type_fill
+
+                            }
+
+            mt5.order_send(pending_order)
+
+        elif (sl == None) and ( tp != None):
+
+            pending_order = {
+                            "action":mt5.TRADE_ACTION_PENDING,
+                            "symbol": symbol,
+                            "volume": volume,
+                            "price": price,
+                            "type": type_op,
+                            "tp": tp,
+                            "type_time":mt5.ORDER_TIME_SPECIFIED, 
+                            "expiration": expirationdate, 
+                            "comment": "Pivot",
+                            "type_filling": type_fill
+
+                            }
+
+            mt5.order_send(pending_order)
+        
+        elif (sl == None) and ( tp == None):
+            pending_order = {
+                            "action":mt5.TRADE_ACTION_PENDING,
+                            "symbol": symbol,
+                            "volume": volume,
+                            "price": price,
+                            "type": type_op,
+                            "type_time":mt5.ORDER_TIME_SPECIFIED, 
+                            "expiration": expirationdate, 
+                            "comment": "Pivot",
+                            "type_filling": type_fill
+
+                            }
+
+            mt5.order_send(pending_order)
