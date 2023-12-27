@@ -50,6 +50,19 @@ mi_dataframe = pd.DataFrame(mi_datos, index = [0] )
 mi_dataframe['nombre']
 mi_dataframe['nombre'].iloc[0]
 
+dict_ejemplo = {u'2012-07-01': 391,
+ u'2012-07-02': 392,
+ u'2012-07-03': 392,
+ u'2012-07-04': 392,
+ u'2012-07-05': 394,
+ u'2012-07-06': 395}
+print(dict_ejemplo)
+
+data_ventas = pd.DataFrame.from_dict(dict_ejemplo,orient='index',columns=['ventas'])
+print(data_ventas)
+data_ventas.head(2)
+data_ventas.tail(2)
+
 ######################## Ciclo for ###################
 
 lista_numeros = [1,2,3,4,5]
