@@ -91,14 +91,76 @@ for numero in lista_numeros:
     else:
         print('El número es impar')
 
+nlista_numero = [1,2,3,4]
+
+for numero in nlista_numero:
+    if numero == 1:
+        print('el numero es impar')
+    elif numero == 2:
+        print("el numero es par")
+    elif numero == 3:
+        print('el numero es impar')
+    elif numero == 4:
+        print("el numero es par")
+    else:
+        print("el número leído no está en la lista")
+
+nlista_numero = [1,2,3,4]
+
+for numero in nlista_numero:
+    if (numero == 1) or (numero == 3):
+        print('El número es impar')
+    elif (numero == 2) or (numero == 4):
+        print('El número es par')
+    else:
+        print("el número leído no está en la lista")  
+
 ############### Funciones ###########################
 
-def mi_maquina_de_sumar(numero_1, numero_2):
-    resultado = numero_1 + numero_2
+def maquina_multiplicar(numero_1,numero_2):
+    resultado = numero_1*numero_2
     print(resultado)
 
-mi_maquina_de_sumar(6,12)
+maquina_multiplicar(5,8)
+maquina_multiplicar(7,9)
 
-def mi_maquina_de_sumar2(numero_1, numero_2):
-    resultado = numero_1 + numero_2
+a = maquina_multiplicar(7,9)
+
+def maquina_multiplicar(numero_1,numero_2):
+    resultado = numero_1*numero_2
     return resultado
+
+def maquina_restar(numero_1,numero_2):
+    resultado = numero_1-numero_2
+    return resultado
+
+def maquina_sumar(numero_1,numero_2):
+    resultado = numero_1+numero_2
+    return resultado
+
+def maquina_dividir(numero_1,numero_2):
+    if numero_2 == 0:
+        print('La división por 0 no está definida')
+        resultado = 0
+    else:
+        resultado = numero_1/numero_2
+    return resultado
+
+maquina_multiplicar(7,9)
+a = maquina_multiplicar(7,9)
+
+def calculadora(numero_1,numero_2,operador):
+    if operador == '+':
+        resultado = maquina_sumar(numero_1,numero_2)
+    elif operador == '-':
+        resultado = maquina_restar(numero_1,numero_2)
+    elif operador == '*':
+        resultado = maquina_multiplicar(numero_1,numero_2)
+    elif operador == '/':
+        resultado = maquina_dividir(numero_1,numero_2)
+    else:
+        print('Operador no se reconoce')
+        resultado = 0
+    return resultado
+
+calculadora(7689,7535,'*')

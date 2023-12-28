@@ -16,5 +16,16 @@ rates = mt5.copy_rates_from_pos('EURUSD',mt5.TIMEFRAME_M1,0,99999)
 tabla = pd.DataFrame(rates)
 tabla['time'] = pd.to_datetime(tabla['time'], unit = 's')
 
+tabla.head(10)
+tabla.tail(10)
+
+tabla['close']
+#Traerme el último precio
+
+tabla['close'].iloc[99]
+tabla['close'].iloc[-1]
+
+#Traer varios registros
+tabla['close'].iloc[90:]
 
 
