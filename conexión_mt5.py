@@ -4,7 +4,7 @@ import MetaTrader5 as mt5
 nombre = 67043467
 clave = 'Genttly.2022'
 servidor = 'RoboForex-ECN'
-path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
+path = r'C:\Program Files\RoboForex - MetaTrader 5\terminal64.exe'
 
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 
@@ -28,4 +28,17 @@ tabla['close'].iloc[-1]
 #Traer varios registros
 tabla['close'].iloc[90:]
 
+## get ticks_data ##
 
+import pytz
+from datetime import datetime
+
+timezone = pytz.timezone("Etc/UTC")
+# create 'datetime' object in UTC time zone to avoid the implementation of a local time zone offset
+utc_from = datetime(2020, 1, 10, tzinfo=timezone)
+
+ticks = mt5.copy_ticks_from("EURUSD", utc_from, 100000, mt5.COPY_TICKS_ALL)
+print("Ticks received:",len(ticks))
+
+ticks_frame = pd.DataFrame(ticks)
+ticks_frame['time']=pd.to_datetime(ticks_frame['time'], unit='s')
