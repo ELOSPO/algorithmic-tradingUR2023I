@@ -35,9 +35,9 @@ from datetime import datetime
 
 timezone = pytz.timezone("Etc/UTC")
 # create 'datetime' object in UTC time zone to avoid the implementation of a local time zone offset
-utc_from = datetime(2020, 1, 10, tzinfo=timezone)
+utc_from = datetime(2023, 1, 10, tzinfo=timezone)
 
-ticks = mt5.copy_ticks_from("EURUSD", utc_from, 100000, mt5.COPY_TICKS_ALL)
+ticks = mt5.copy_ticks_from("BTCUSD", utc_from, 100000, mt5.COPY_TICKS_INFO)
 print("Ticks received:",len(ticks))
 
 ticks_frame = pd.DataFrame(ticks)

@@ -351,3 +351,49 @@ request_modify = {
 
 mt5.order_send(request_modify)
 
+def enviar_operaciones_pendiente(symbol,type_order,price,volume):
+
+    pendiente = {'action': mt5.TRADE_ACTION_PENDING,
+                 'type': type_order,
+                 'price':price,
+                 'symbol':symbol,
+                 'volume':volume,
+                 'type_filling':mt5.ORDER_FILLING_IOC
+                }
+
+    mt5.order_send(pendiente)
+
+enviar_operaciones_pendiente('EURUSD',mt5.ORDER_TYPE_SELL_LIMIT,mt5.symbol_info_tick('EURUSD').bid +0.001,1.0)
+
+
+def modificar_ordenes_pendientes(ticket,price):
+    
+    modify_order = {
+                'order':ticket,
+                'action': mt5.TRADE_ACTION_MODIFY,
+                'price': price
+              }
+
+    mt5.order_send(modify_order)
+
+ordenes = mt5.orders_get()
+df = pd.DataFrame(list(ordenes), columns = ordenes[0]._asdict().keys())
+print(df)
+
+remove_order = {'order':366198400,
+                'action': mt5.TRADE_ACTION_REMOVE,
+                'type_filling':mt5.ORDER_FILLING_IOC}
+
+mt5.order_send(remove_order)
+
+def remove_order(ticket,type_filling):
+
+    remove_order = {'order':ticket,
+                    'action': mt5.TRADE_ACTION_REMOVE,
+                    'type_filling':type_filling}
+
+    mt5.order_send(remove_order)
+
+for ordenes_pendientes in mt5.orders_get():
+    # print(ordenes_pendientes.ticket)
+    remove_order(ordenes_pendientes.ticket,mt5.ORDER_FILLING_IOC)
