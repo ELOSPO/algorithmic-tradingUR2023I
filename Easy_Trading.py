@@ -506,3 +506,8 @@ class Basic_funcs():
                             }
 
             mt5.order_send(pending_order)
+
+    # def _efficient_close_trades(self,symbol,comment = None):
+        
+    #     if comment == None:
+    #         symb_to_close = mt5.get
