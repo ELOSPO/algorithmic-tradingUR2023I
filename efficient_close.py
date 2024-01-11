@@ -139,6 +139,7 @@ import datetime
 for op in mt5.positions_get():
     delta = (( (datetime.datetime.now() + datetime.timedelta(hours=7)) - (pd.to_datetime(op.time, unit = 's' ) ) ).seconds/3600)
     print( delta, 'time')
+    print(delta > 24)
     # if delta >= 0.70:
     #     cerrar_operaciones(op)
 

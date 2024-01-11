@@ -74,7 +74,8 @@ class Estrategia_simple_rsi(Strategy):
 
 data_5 = bfs.get_data_from_dates(2023,1,1,2023,9,20,'EURUSD',mt5.TIMEFRAME_M15,True)
 
-backtesting_5 = Backtest(data_5,Estrategia_simple_rsi,cash=10_000)
+#Exclusive Orders para ejecutar una sola operación
+backtesting_5 = Backtest(data_5,Estrategia_simple_rsi,cash=10_000,exclusive_orders= True)
 stats_5 = backtesting_5.run()
 
 stats_5, hm = backtesting_5.optimize(lim_sup_rsi = [70,75,80,85,95],
