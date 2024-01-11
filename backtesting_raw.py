@@ -2,9 +2,13 @@ import pandas as pd
 import numpy as np
 import MetaTrader5 as mt5
 
+nombre = 67043467
+clave = 'Genttly.2022'
+servidor = 'RoboForex-ECN'
+path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
 
 
-def backtrader_funct(symbol,periodo,atr_multiplier,timeframe = mt5.TIMEFRAME_M15):
+def backtrader_funct(symbol,periodo,atr_multiplier,name,serv,key,timeframe = mt5.TIMEFRAME_M15):
 
     mt5.initialize(login = name, server = serv, password = key, path = path)
     tasas_m1 = mt5.copy_rates_from_pos(symbol,timeframe,0,9000)
@@ -66,6 +70,7 @@ periodos = [2,6,8,9,10,15,16]
 atrs = [1,2,3,4,5,6,7,8,9,10]
 acc_res = []
 
+symbol = []
 for p in periodos:
     for a in atrs:
         acc_p = backtrader_funct(symbol,p,atr_multiplier = a,timeframe = mt5.TIMEFRAME_M5)
