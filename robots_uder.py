@@ -18,7 +18,7 @@ bfs = Basic_funcs(nombre, clave, servidor, path)
 
 class Robots_Ur():
 
-    def bot_regresion(self, simbolo,time_frame,cantidad,max_p_value):
+    def bot_regresion(self, simbolo,time_frame,cantidad,max_p_value,risk_factor = 0.05, sl = None, tp = None):
         datos = bfs.extract_data(simbolo,time_frame,cantidad)
 
         y = datos[['close']]
@@ -50,11 +50,11 @@ class Robots_Ur():
 
 
         if pendiente > 0 and p_values[1] < max_p_value:
-            lotaje = bfs.calculate_position_size(simbolo, tradeinfo, 0.05)
-            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_BUY, 'reg_prodct')
+            lotaje = bfs.calculate_position_size(simbolo, tradeinfo, risk_factor)
+            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_BUY, 'reg_prodct',sl,tp)
         if pendiente < 0 and p_values[1] < max_p_value:
-            lotaje = bfs.calculate_position_size(simbolo, tradeinfo, 0.05)
-            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_SELL, 'reg_prodct')
+            lotaje = bfs.calculate_position_size(simbolo, tradeinfo, risk_factor)
+            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_SELL, 'reg_prodct',sl,tp)
 
     def handler_robot_regresion(self,time_frame,simbolo,cantidad,max_p_value):
 
