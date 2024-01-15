@@ -418,7 +418,12 @@ class Basic_funcs():
 
         return balance, profit_account, equity, free_margin
 
-    def get_data_from_dates(self,year_ini,month_ini,day_ini,year_fin,month_fin,day_fin,symbol,timeframe, for_bt = False) -> pd.DataFrame():
+    def get_data_from_dates(self,year_ini:int,month_ini:int,day_ini:int,year_fin:int,month_fin:int,day_fin:int,symbol:str,timeframe:mt5, for_bt:bool = False) -> pd.DataFrame():
+        '''
+        Función para obtener los datos de un símbolo específico en un rango de fechas determinado. Para usar la función apra retornar 
+        el formato de backtesting, debe usarse con el parámetro for_bt = True
+
+        '''
         from_date = datetime(year_ini, month_ini, day_ini)
         to_date = datetime(year_fin, month_fin, day_fin)
         rates = mt5.copy_rates_range(symbol, timeframe, from_date, to_date)
