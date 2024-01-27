@@ -105,7 +105,7 @@ class Basic_funcs():
 
             mt5.order_send(close_pend_request)
 
-    def open_operations(self,par:str,volumen: float,tipo_operacion:mt5,nombre_bot:str,sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK) -> None:
+    def _open_operations(self,par:str,volumen: float,tipo_operacion:mt5,nombre_bot:str,sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK) -> None:
         '''
         Función para abrir operaciones en mt5. Esta funciónpuede abrir operaciones sin Stop Loss y sin Take Profit, solo con stop loss, solo con 
         take profit o con ámbos parámetros.
@@ -133,7 +133,7 @@ class Basic_funcs():
 
             }
 
-            mt5.order_send(orden)
+            result  = mt5.order_send(orden)
 
             print('Se ejecutó una',tipo_operacion, 'con un volumen de', volumen)
         
@@ -151,8 +151,8 @@ class Basic_funcs():
 
             }
 
-            mt5.order_send(orden)
-            print('Se ejecutó una',tipo_operacion, 'con un volumen de', volumen)
+            result  = mt5.order_send(orden)
+            
 
         elif (sl != None) and (tp == None):
             orden = {
@@ -168,7 +168,8 @@ class Basic_funcs():
 
             }
 
-            mt5.order_send(orden)
+            result  = mt5.order_send(orden)
+            
         
         elif (sl != None) and (tp != None):
             orden = {
@@ -185,9 +186,22 @@ class Basic_funcs():
 
             }
 
-            mt5.order_send(orden)
-            print('Se ejecutó una',tipo_operacion, 'con un volumen de', volumen)
-   
+            result  = mt5.order_send(orden)
+        
+        return result
+    
+    def buy(self,symbol,volumen,nom_bot:str='Py',sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK):
+        '''
+        Open a long trade
+        '''
+        self._open_operations(symbol,volumen,mt5.ORDER_TYPE_BUY,nom_bot,sl,tp,type_fill)
+
+    def sell(self,symbol,volumen,nom_bot:str='Py',sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK):
+        '''
+        Open a shor trade
+        '''
+        self._open_operations(symbol,volumen,mt5.ORDER_TYPE_SELL,nom_bot,sl,tp,type_fill)
+          
     def close_all_open_operations(self,data:pd.DataFrame) -> None:
         '''
         Cierra todas las operaciones que estén contenidas en un dataframe.
