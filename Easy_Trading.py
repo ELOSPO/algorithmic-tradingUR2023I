@@ -438,6 +438,7 @@ class Basic_funcs():
         el formato de backtesting, debe usarse con el parámetro for_bt = True
 
         '''
+        mt5.initialize( login = self.nombre, server = self.servidor, password = self.clave, path = self.path)
         from_date = datetime(year_ini, month_ini, day_ini)
         to_date = datetime(year_fin, month_fin, day_fin)
         rates = mt5.copy_rates_range(symbol, timeframe, from_date, to_date)
