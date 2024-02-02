@@ -406,7 +406,7 @@ class Basic_funcs():
 
         return news
     
-    def get_data_for_bt(self,timeframe,symbol,cantidad):
+    def _get_data_for_bt(self,timeframe,symbol,cantidad):
 
         mt5.initialize( login = self.nombre, server = self.servidor, password = self.clave, path = self.path)
         rates = mt5.copy_rates_from_pos(symbol, timeframe, 0, cantidad)
