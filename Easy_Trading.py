@@ -11,52 +11,7 @@ class Basic_funcs():
         self.nombre = nombre
         self.clave = clave
         self.servidor = servidor
-        self.path = path
-    
-    def modify_orders(self, symb: str,ticket:int,stop_loss:float = None,take_profit:float = None,type_order = mt5.ORDER_TYPE_BUY,type_fill=mt5.ORDER_FILLING_FOK) -> None:
-
-        if (stop_loss != None) and (take_profit == None): 
-            modify_order_request = {
-
-                'action': mt5.TRADE_ACTION_SLTP,
-                'symbol':  symb,
-                'position': ticket ,
-                'type': type_order,
-                'sl': stop_loss,
-                'type_time': mt5.ORDER_TIME_GTC,
-                'type_filling': type_fill
-                                    }
-
-            mt5.order_send(modify_order_request)
-
-        elif (stop_loss == None) and (take_profit != None): 
-            modify_order_request = {
-
-            'action': mt5.TRADE_ACTION_SLTP,
-            'symbol':  symb,
-            'position': ticket ,
-            'type': type_order,
-            'tp': take_profit,
-            'type_time': mt5.ORDER_TIME_GTC,
-            'type_filling': type_fill
-                                    }
-
-            mt5.order_send(modify_order_request)
-        
-        else:
-            modify_order_request = {
-
-            'action': mt5.TRADE_ACTION_SLTP,
-            'symbol':  symb,
-            'position': ticket ,
-            'type': type_order,
-            'tp': take_profit,
-            'sl': stop_loss,
-            'type_time': mt5.ORDER_TIME_GTC,
-            'type_filling': type_fill
-                                    }
-
-            mt5.order_send(modify_order_request)
+        self.path = path   
     
     def extract_data(self,par:str,periodo:mt5,cantidad:int) -> pd.DataFrame:
         '''
@@ -88,166 +43,6 @@ class Basic_funcs():
             df = pd.DataFrame()
 
         return df
-    
-    def remover_operacion_pendiente(self,nom_est:str,type_fill:mt5) -> None:
-        '''
-        Función para remover las órdenes pendientes de una estrategia particular
-        '''
-        df = self.obtener_ordenes_pendientes()
-        df_estrategia = df[df['comment'] == nom_est]
-        ticket_list = df_estrategia['ticket'].unique().tolist()
-        for ticket in ticket_list:
-            close_pend_request = {
-                                    "action": mt5.TRADE_ACTION_REMOVE,
-                                    "order": ticket,
-                                    "type_filling": type_fill
-            }
-
-            mt5.order_send(close_pend_request)
-
-    def _open_operations(self,par:str,volumen: float,tipo_operacion:mt5,nombre_bot:str,sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK) -> None:
-        '''
-        Función para abrir operaciones en mt5. Esta funciónpuede abrir operaciones sin Stop Loss y sin Take Profit, solo con stop loss, solo con 
-        take profit o con ámbos parámetros.
-
-        # Parámetros
-
-        - par: Símbolo a extraer
-        - volumen: Lotaje de la operación
-        - tipo_operacion: mt5.ORDER_TYPE_BUY o mt5.ORDER_TYPE_BUY
-        - nombre_bot: Nombre de la estrategia que abre la operación
-        - type_fill: Política de ejecución de las órdenes FILLING_FOK o FILLING_IOC
-
-        '''
-        if (sl == None) and (tp == None):
-
-            orden = {
-            "action": mt5.TRADE_ACTION_DEAL,
-            "symbol": par,
-            "volume": volumen,
-            "type": tipo_operacion,
-            "magic": 202204,
-            "comment": nombre_bot,
-            "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": type_fill
-
-            }
-
-            result  = mt5.order_send(orden)
-
-            print('Se ejecutó una',tipo_operacion, 'con un volumen de', volumen)
-        
-        elif (sl == None) and (tp != None):
-            orden = {
-            "action": mt5.TRADE_ACTION_DEAL,
-            "symbol": par,
-            "tp": tp,
-            "volume": volumen,
-            "type": tipo_operacion,
-            "magic": 202204,
-            "comment": nombre_bot,
-            "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": type_fill
-
-            }
-
-            result  = mt5.order_send(orden)
-            
-
-        elif (sl != None) and (tp == None):
-            orden = {
-            "action": mt5.TRADE_ACTION_DEAL,
-            "symbol": par,
-            "sl": sl,
-            "volume": volumen,
-            "type": tipo_operacion,
-            "magic": 202204,
-            "comment": nombre_bot,
-            "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": type_fill
-
-            }
-
-            result  = mt5.order_send(orden)
-            
-        
-        elif (sl != None) and (tp != None):
-            orden = {
-            "action": mt5.TRADE_ACTION_DEAL,
-            "symbol": par,
-            "sl": sl,
-            "tp": tp,
-            "volume": volumen,
-            "type": tipo_operacion,
-            "magic": 202204,
-            "comment": nombre_bot,
-            "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": type_fill
-
-            }
-
-            result  = mt5.order_send(orden)
-        
-        return result
-    
-    def buy(self,symbol,volumen,nom_bot:str='Py',sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK):
-        '''
-        Open a long trade
-        '''
-        self._open_operations(symbol,volumen,mt5.ORDER_TYPE_BUY,nom_bot,sl,tp,type_fill)
-
-    def sell(self,symbol,volumen,nom_bot:str='Py',sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK):
-        '''
-        Open a shor trade
-        '''
-        self._open_operations(symbol,volumen,mt5.ORDER_TYPE_SELL,nom_bot,sl,tp,type_fill)
-          
-    def close_all_open_operations(self,data:pd.DataFrame) -> None:
-        '''
-        Cierra todas las operaciones que estén contenidas en un dataframe.
-
-        # Parámetros
-
-        - par: Símbolo 
-        '''
-        
-        df_open_positions = data.copy()
-        lista_ops = df_open_positions['ticket'].unique().tolist()
-            
-
-        for operacion in lista_ops:
-            df_operacion = df_open_positions[df_open_positions['ticket'] == operacion]
-            price_close = df_operacion['price_current']
-            tipo_operacion = df_operacion['type'].item()
-            simbolo_operacion = df_operacion['symbol'].item()
-            volumen_operacion = df_operacion['volume'].item() 
-            # 1 Sell / 0 Buy
-            if tipo_operacion == 1:
-                tip_op = mt5.ORDER_TYPE_BUY
-                close_request = {
-                    'action': mt5.TRADE_ACTION_DEAL,
-                    'symbol':simbolo_operacion,
-                    'volume':volumen_operacion,
-                    'type': tip_op,
-                    'position': operacion,
-                    # 'price': price_close,
-                    'comment':'Cerrar posiciones',
-                    'type_filling': mt5.ORDER_FILLING_FOK
-                }
-                mt5.order_send(close_request)
-            if tipo_operacion == 0:
-                tip_op = mt5.ORDER_TYPE_SELL
-                close_request = {
-                    'action': mt5.TRADE_ACTION_DEAL,
-                    'symbol':simbolo_operacion,
-                    'volume':volumen_operacion,
-                    'type': tip_op,
-                    'position': operacion,
-                    # 'price': price_close,
-                    'comment':'Cerrar posiciones',
-                    'type_filling': mt5.ORDER_FILLING_FOK
-                }
-                mt5.order_send(close_request)
    
     def get_opened_positions(self,par:str = None) -> tuple:
         '''
@@ -292,37 +87,6 @@ class Basic_funcs():
             print("No se logró obtener la historia correctamente")
         
         return df_pos
-
-    def send_to_breakeven(self,df_pos:pd.DataFrame, perc_rec:float) -> None:
-        '''
-        Función para enviar a Break Even todas las posiciones de un dataframe
-
-        # Parámetros
-
-        - df_pos_temp : Dataframe con las operaciones que se desean llevar a break_even
-        - perc_recorrido: porcentaje de recorrido entre el precio de apertura y el TP para llevar la operación a BreakEven
-
-
-        '''
-        if df_pos.empty:
-            print('No hay operaciones abiertas')
-        else:
-            lista_operaciones = df_pos['ticket'].tolist()
-            for op in lista_operaciones:
-                df_temp = df_pos[df_pos['ticket'] == op]
-                symb = df_temp['symbol'].iloc[0]
-                ticket = op
-                stop_loss = df_temp['price_open'].iloc[0] #Esta variable es el precio de apertura stop_loss
-                take_profit = df_temp['tp'].iloc[0]
-                precio_actual = df_temp['price_current'].iloc[0]
-                tipo_operacion = df_temp['type'].iloc[0]
-
-                if (tipo_operacion == 1) and (precio_actual < stop_loss):
-                    type_order = mt5.ORDER_TYPE_BUY
-                    self.modify_orders(symb,ticket,stop_loss,take_profit,type_order)
-                if (tipo_operacion == 0) and (precio_actual > stop_loss):
-                    type_order = mt5.ORDER_TYPE_SELL
-                    self.modify_orders(symb,ticket,stop_loss,take_profit,type_order)
 
     def calculate_position_size(self,symbol:str, tradeinfo:float, per_to_risk:float) -> float:
         '''
@@ -451,83 +215,330 @@ class Basic_funcs():
             rates_frame = rates_frame.set_index('time')
         
         return rates_frame
-    
-    def send_pending_order(self,symbol:str,volume:float,price:float,type_op:mt5,expirationdate,type_fill:mt5,sl:float=None,tp:float = None):
-
-        '''Función apra enviar órdenes pendientes. Esta función siempre debe ser usada con un expiration date'''
-
-        if (sl != None ) and (tp != None):
-            
-            pending_order = {
-                            "action":mt5.TRADE_ACTION_PENDING,
-                            "symbol": symbol,
-                            "volume": volume,
-                            "price": price,
-                            "type": type_op,
-                            "sl": sl,
-                            "tp": tp,
-                            "type_time":mt5.ORDER_TIME_SPECIFIED, 
-                            "expiration": expirationdate, 
-                            "comment": "Pivot",
-                            "type_filling": type_fill
-
-                            }
-
-            mt5.order_send(pending_order)
-
-        elif (sl != None) and ( tp == None):
-
-            pending_order = {
-                            "action":mt5.TRADE_ACTION_PENDING,
-                            "symbol": symbol,
-                            "volume": volume,
-                            "price": price,
-                            "type": type_op,
-                            "sl": sl,
-                            "type_time":mt5.ORDER_TIME_SPECIFIED, 
-                            "expiration": expirationdate, 
-                            "comment": "Pivot",
-                            "type_filling": type_fill
-
-                            }
-
-            mt5.order_send(pending_order)
-
-        elif (sl == None) and ( tp != None):
-
-            pending_order = {
-                            "action":mt5.TRADE_ACTION_PENDING,
-                            "symbol": symbol,
-                            "volume": volume,
-                            "price": price,
-                            "type": type_op,
-                            "tp": tp,
-                            "type_time":mt5.ORDER_TIME_SPECIFIED, 
-                            "expiration": expirationdate, 
-                            "comment": "Pivot",
-                            "type_filling": type_fill
-
-                            }
-
-            mt5.order_send(pending_order)
-        
-        elif (sl == None) and ( tp == None):
-            pending_order = {
-                            "action":mt5.TRADE_ACTION_PENDING,
-                            "symbol": symbol,
-                            "volume": volume,
-                            "price": price,
-                            "type": type_op,
-                            "type_time":mt5.ORDER_TIME_SPECIFIED, 
-                            "expiration": expirationdate, 
-                            "comment": "Pivot",
-                            "type_filling": type_fill
-
-                            }
-
-            mt5.order_send(pending_order)
 
     # def _efficient_close_trades(self,symbol,comment = None):
         
     #     if comment == None:
     #         symb_to_close = mt5.get
+
+
+class Trade(Basic_funcs):
+
+        def _open_operations(self,par:str,volumen: float,tipo_operacion:mt5,nombre_bot:str,sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK) -> None:
+            '''
+            Función para abrir operaciones en mt5. Esta funciónpuede abrir operaciones sin Stop Loss y sin Take Profit, solo con stop loss, solo con 
+            take profit o con ámbos parámetros.
+
+            # Parámetros
+
+            - par: Símbolo a extraer
+            - volumen: Lotaje de la operación
+            - tipo_operacion: mt5.ORDER_TYPE_BUY o mt5.ORDER_TYPE_BUY
+            - nombre_bot: Nombre de la estrategia que abre la operación
+            - type_fill: Política de ejecución de las órdenes FILLING_FOK o FILLING_IOC
+
+            '''
+            if (sl == None) and (tp == None):
+
+                orden = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "symbol": par,
+                "volume": volumen,
+                "type": tipo_operacion,
+                "magic": 202204,
+                "comment": nombre_bot,
+                "type_time": mt5.ORDER_TIME_GTC,
+                "type_filling": type_fill
+
+                }
+
+                result  = mt5.order_send(orden)
+
+                print('Se ejecutó una',tipo_operacion, 'con un volumen de', volumen)
+
+            elif (sl == None) and (tp != None):
+                orden = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "symbol": par,
+                "tp": tp,
+                "volume": volumen,
+                "type": tipo_operacion,
+                "magic": 202204,
+                "comment": nombre_bot,
+                "type_time": mt5.ORDER_TIME_GTC,
+                "type_filling": type_fill
+
+                }
+
+                result  = mt5.order_send(orden)
+
+
+            elif (sl != None) and (tp == None):
+                orden = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "symbol": par,
+                "sl": sl,
+                "volume": volumen,
+                "type": tipo_operacion,
+                "magic": 202204,
+                "comment": nombre_bot,
+                "type_time": mt5.ORDER_TIME_GTC,
+                "type_filling": type_fill
+
+                }
+
+                result  = mt5.order_send(orden)
+
+
+            elif (sl != None) and (tp != None):
+                orden = {
+                "action": mt5.TRADE_ACTION_DEAL,
+                "symbol": par,
+                "sl": sl,
+                "tp": tp,
+                "volume": volumen,
+                "type": tipo_operacion,
+                "magic": 202204,
+                "comment": nombre_bot,
+                "type_time": mt5.ORDER_TIME_GTC,
+                "type_filling": type_fill
+
+                }
+
+                result  = mt5.order_send(orden)
+
+            return result
+
+        def buy(self,symbol,volumen,nom_bot:str='Py',sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK):
+            '''
+            Open a long trade
+            '''
+            self._open_operations(symbol,volumen,mt5.ORDER_TYPE_BUY,nom_bot,sl,tp,type_fill)
+
+        def sell(self,symbol,volumen,nom_bot:str='Py',sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK):
+            '''
+            Open a shor trade
+            '''
+            self._open_operations(symbol,volumen,mt5.ORDER_TYPE_SELL,nom_bot,sl,tp,type_fill)
+
+        def modify_orders(self, symb: str,ticket:int,stop_loss:float = None,take_profit:float = None,type_order = mt5.ORDER_TYPE_BUY,type_fill=mt5.ORDER_FILLING_FOK) -> None:
+
+            if (stop_loss != None) and (take_profit == None): 
+                modify_order_request = {
+
+                    'action': mt5.TRADE_ACTION_SLTP,
+                    'symbol':  symb,
+                    'position': ticket ,
+                    'type': type_order,
+                    'sl': stop_loss,
+                    'type_time': mt5.ORDER_TIME_GTC,
+                    'type_filling': type_fill
+                                        }
+
+                request_modify = mt5.order_send(modify_order_request)
+
+            elif (stop_loss == None) and (take_profit != None): 
+                modify_order_request = {
+
+                'action': mt5.TRADE_ACTION_SLTP,
+                'symbol':  symb,
+                'position': ticket ,
+                'type': type_order,
+                'tp': take_profit,
+                'type_time': mt5.ORDER_TIME_GTC,
+                'type_filling': type_fill
+                                        }
+
+                request_modify = mt5.order_send(modify_order_request)
+
+            else:
+                modify_order_request = {
+
+                'action': mt5.TRADE_ACTION_SLTP,
+                'symbol':  symb,
+                'position': ticket ,
+                'type': type_order,
+                'tp': take_profit,
+                'sl': stop_loss,
+                'type_time': mt5.ORDER_TIME_GTC,
+                'type_filling': type_fill
+                                        }
+
+                request_modify = mt5.order_send(modify_order_request)
+            
+            return request_modify
+        
+        def remover_operacion_pendiente(self,nom_est:str,type_fill:mt5) -> None:
+            '''
+            Función para remover las órdenes pendientes de una estrategia particular
+            '''
+            df = self.obtener_ordenes_pendientes()
+            df_estrategia = df[df['comment'] == nom_est]
+            ticket_list = df_estrategia['ticket'].unique().tolist()
+            for ticket in ticket_list:
+                close_pend_request = {
+                                        "action": mt5.TRADE_ACTION_REMOVE,
+                                        "order": ticket,
+                                        "type_filling": type_fill
+                }
+
+                order_remove = mt5.order_send(close_pend_request)
+            
+            return order_remove
+        
+        def close_all_open_operations(self,data:pd.DataFrame) -> None:
+            '''
+            Cierra todas las operaciones que estén contenidas en un dataframe.
+
+            # Parámetros
+
+            - par: Símbolo 
+            '''
+
+            df_open_positions = data.copy()
+            lista_ops = df_open_positions['ticket'].unique().tolist()
+
+
+            for operacion in lista_ops:
+                df_operacion = df_open_positions[df_open_positions['ticket'] == operacion]
+                price_close = df_operacion['price_current']
+                tipo_operacion = df_operacion['type'].item()
+                simbolo_operacion = df_operacion['symbol'].item()
+                volumen_operacion = df_operacion['volume'].item() 
+                # 1 Sell / 0 Buy
+                if tipo_operacion == 1:
+                    tip_op = mt5.ORDER_TYPE_BUY
+                    close_request = {
+                        'action': mt5.TRADE_ACTION_DEAL,
+                        'symbol':simbolo_operacion,
+                        'volume':volumen_operacion,
+                        'type': tip_op,
+                        'position': operacion,
+                        # 'price': price_close,
+                        'comment':'Cerrar posiciones',
+                        'type_filling': mt5.ORDER_FILLING_FOK
+                    }
+                    close_r = mt5.order_send(close_request)
+                if tipo_operacion == 0:
+                    tip_op = mt5.ORDER_TYPE_SELL
+                    close_request = {
+                        'action': mt5.TRADE_ACTION_DEAL,
+                        'symbol':simbolo_operacion,
+                        'volume':volumen_operacion,
+                        'type': tip_op,
+                        'position': operacion,
+                        # 'price': price_close,
+                        'comment':'Cerrar posiciones',
+                        'type_filling': mt5.ORDER_FILLING_FOK
+                    }
+                    close_r = mt5.order_send(close_request)
+            
+            return close_r
+        
+        def send_to_breakeven(self,df_pos:pd.DataFrame, perc_rec:float) -> None:
+            '''
+            Función para enviar a Break Even todas las posiciones de un dataframe
+
+            # Parámetros
+
+            - df_pos_temp : Dataframe con las operaciones que se desean llevar a break_even
+            - perc_recorrido: porcentaje de recorrido entre el precio de apertura y el TP para llevar la operación a BreakEven
+
+
+            '''
+            if df_pos.empty:
+                print('No hay operaciones abiertas')
+            else:
+                lista_operaciones = df_pos['ticket'].tolist()
+                for op in lista_operaciones:
+                    df_temp = df_pos[df_pos['ticket'] == op]
+                    symb = df_temp['symbol'].iloc[0]
+                    ticket = op
+                    stop_loss = df_temp['price_open'].iloc[0] #Esta variable es el precio de apertura stop_loss
+                    take_profit = df_temp['tp'].iloc[0]
+                    precio_actual = df_temp['price_current'].iloc[0]
+                    tipo_operacion = df_temp['type'].iloc[0]
+
+                    if (tipo_operacion == 1) and (precio_actual < stop_loss):
+                        type_order = mt5.ORDER_TYPE_BUY
+                        self.modify_orders(symb,ticket,stop_loss,take_profit,type_order)
+                    if (tipo_operacion == 0) and (precio_actual > stop_loss):
+                        type_order = mt5.ORDER_TYPE_SELL
+                        self.modify_orders(symb,ticket,stop_loss,take_profit,type_order)
+        
+        def send_pending_order(self,symbol:str,volume:float,price:float,type_op:mt5,expirationdate,type_fill:mt5,sl:float=None,tp:float = None):
+
+            '''Función apra enviar órdenes pendientes. Esta función siempre debe ser usada con un expiration date'''
+
+            if (sl != None ) and (tp != None):
+
+                pending_order = {
+                                "action":mt5.TRADE_ACTION_PENDING,
+                                "symbol": symbol,
+                                "volume": volume,
+                                "price": price,
+                                "type": type_op,
+                                "sl": sl,
+                                "tp": tp,
+                                "type_time":mt5.ORDER_TIME_SPECIFIED, 
+                                "expiration": expirationdate, 
+                                "comment": "Pivot",
+                                "type_filling": type_fill
+
+                                }
+
+                p_order = mt5.order_send(pending_order)
+
+            elif (sl != None) and ( tp == None):
+
+                pending_order = {
+                                "action":mt5.TRADE_ACTION_PENDING,
+                                "symbol": symbol,
+                                "volume": volume,
+                                "price": price,
+                                "type": type_op,
+                                "sl": sl,
+                                "type_time":mt5.ORDER_TIME_SPECIFIED, 
+                                "expiration": expirationdate, 
+                                "comment": "Pivot",
+                                "type_filling": type_fill
+
+                                }
+
+                p_order = mt5.order_send(pending_order)
+
+            elif (sl == None) and ( tp != None):
+
+                pending_order = {
+                                "action":mt5.TRADE_ACTION_PENDING,
+                                "symbol": symbol,
+                                "volume": volume,
+                                "price": price,
+                                "type": type_op,
+                                "tp": tp,
+                                "type_time":mt5.ORDER_TIME_SPECIFIED, 
+                                "expiration": expirationdate, 
+                                "comment": "Pivot",
+                                "type_filling": type_fill
+
+                                }
+
+                p_order = mt5.order_send(pending_order)
+
+            elif (sl == None) and ( tp == None):
+                pending_order = {
+                                "action":mt5.TRADE_ACTION_PENDING,
+                                "symbol": symbol,
+                                "volume": volume,
+                                "price": price,
+                                "type": type_op,
+                                "type_time":mt5.ORDER_TIME_SPECIFIED, 
+                                "expiration": expirationdate, 
+                                "comment": "Pivot",
+                                "type_filling": type_fill
+
+                                }
+
+                p_order = mt5.order_send(pending_order)
+            
+            return p_order
