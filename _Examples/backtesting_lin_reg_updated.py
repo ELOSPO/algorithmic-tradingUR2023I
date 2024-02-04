@@ -1,5 +1,5 @@
 from backtesting import Backtest, Strategy
-from Easy_Trading import Basic_funcs
+from ..Easy_Trading import Basic_funcs
 from Robots_ur_bt import Robots_Urbt
 import MetaTrader5 as mt5
 import pandas as pd
