@@ -324,6 +324,21 @@ class Basic_funcs():
                     type_order = mt5.ORDER_TYPE_SELL
                     self.modify_orders(symb,ticket,stop_loss,take_profit,type_order)
 
+    def kelly_criterion_pct_risk(self,win_rate:float,profit_factor:float) -> float:
+        """
+        Calcula el porcentaje de capital a arriesgar de acuerdo a un win rate y un profit factor establecido
+
+        # Parámetros
+
+        - win_rate: Tasa de ganancia de la estrategia
+        - profit factor: Profit factor de la estrategia
+
+        
+        """
+        k_c = (profit_factor*win_rate + (win_rate-1))/profit_factor
+
+        return k_c
+
     def calculate_position_size(self,symbol:str, tradeinfo:float, per_to_risk:float) -> float:
         '''
         Función para calcular el lotaje óptimo dado un símbolo, una pérdida y un porcentaje de la cuenta que se desea arriesgar.
