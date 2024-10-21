@@ -31,3 +31,5 @@ for i in range(len(lista_activos)):
     data1 = bfs.extract_data(lista_activos[i],mt5.TIMEFRAME_H1,10)
     ultimo_precio = data1.close.iloc[-1]
     bfs.buy(lista_activos[i],volumen=position_size,sl = ultimo_precio -lista_sls[i])
+
+noticias = bfs.get_today_calendar()

@@ -9,8 +9,9 @@ clave = 'Genttly.2022'
 servidor = 'RoboForex-ECN'
 path = r'C:\Program Files\RoboForex - MetaTrader 5\terminal64.exe'
 
-
-rbol = Robot_Bollinger(nombre,clave,servidor,path)
+# nombre = input('Ingrese su cuenta: ')
+# clave = input('Ingrese su clave: ')
+rbol = Robot_Bollinger(int(nombre),clave,servidor,path)
 
 while True:
     for symbol in ['EURUSD','USDJPY','USDCAD']:
