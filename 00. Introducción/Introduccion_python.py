@@ -31,6 +31,8 @@ print(lista1)
 
 lista1[2] = 10.82
 
+lista1.append(var_texto2)
+print(lista1)
 ###################### Tuplas ##############
 
 mi_segunda_lista = ['Sebastián', 34, False, [1, 'Hola', True]]
@@ -137,6 +139,14 @@ for posicion in range(len(lista_3)):
 for posicion in range(len(lista_numeros)):
     print(lista_numeros[posicion])
 
+x = 3
+y = 10
+
+x > y
+comp1 = x > y
+print(comp1)
+
+(x > y) or (3 == 6/2)
 
 for numero in lista_numeros:
     if (numero == 2) or (numero == 4):
@@ -176,6 +186,13 @@ for numero in nlista_numero:
     else:
         print("el número leído no está en la lista")  
 
+# imprimir si cada elemento de la lista lista_num1 = [1,2,3,4,5,6,7,8,9,10] es par o impar
+for i in range(len(lista_num1)):
+  if lista_num1[i] % 2 == 0:
+    print(f'{lista_num1[i]} es par')
+  else:
+    print(f'{lista_num1[i]} es impar')
+    
 ############### Funciones ###########################
 
 def maquina_multiplicar(numero_1,numero_2):
