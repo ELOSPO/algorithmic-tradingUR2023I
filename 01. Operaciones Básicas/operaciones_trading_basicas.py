@@ -483,6 +483,17 @@ def remove_order(ticket,type_filling):
 
     mt5.order_send(remove_order)
 
+def enviar_operaciones(symbol,tipo_operacion, vol):
+    orden = {
+            "action" : mt5.TRADE_ACTION_DEAL,
+            "type": tipo_operacion,
+            "symbol": symbol,
+            "volume":vol,
+            "type_filling": mt5.ORDER_FILLING_IOC
+        }
+
+    mt5.order_send(orden)
+
 for ordenes_pendientes in mt5.orders_get():
     # print(ordenes_pendientes.ticket)
     remove_order(ordenes_pendientes.ticket,mt5.ORDER_FILLING_IOC)
