@@ -52,7 +52,7 @@ def pivot_point_bot(symbol):
     t_resistance = high + 2*(pivot - low)
 
     hoy = datetime.datetime.now()
-    fecha_exp_1 = hoy + timedelta(days=1) + timedelta(hours=5)
+    fecha_exp_1 = hoy + timedelta(days=1) + timedelta(hours=7)
     fecha_exp_2 = datetime.datetime(fecha_exp_1.year,fecha_exp_1.month,fecha_exp_1.day,0,0,0)
     timestamp = int(fecha_exp_2.timestamp())
 
