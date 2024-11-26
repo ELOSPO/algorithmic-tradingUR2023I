@@ -56,3 +56,31 @@ prosche.consume_gasolina(1000)
 # auto_2.arrancar()
         
 
+class Creacion_autos():
+    def __init__(self,motor,fabricante,carroceria):
+        self.motor = motor
+        self.fabricante = fabricante
+        self.carroceria = carroceria
+        self.encendido = False
+    
+    def arrancar(self):
+        if self.motor == 'V8':
+            print(f'El auto {self.fabricante} hizo bruuuuuuuuuuuuuum!')
+        elif self.motor == 'V4':
+            print(f'El auto {self.fabricante} hizobrum brum brum brum  bruuuuuuuuuuuuuum!')
+        
+        self.encendido = True
+    
+    def apagar(self):
+        self.encendido = False
+
+
+
+ferrari_f1 = Creacion_autos('V8','Ferrari','F1')
+ferrari_f1.motor
+ferrari_f1.arrancar()
+ferrari_f1.encendido
+ferrari_f1.apagar()
+
+renault_sandero = Creacion_autos('V4','Renault','SUV')
+renault_sandero.fabricante
