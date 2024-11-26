@@ -12,6 +12,10 @@ class Basic_funcs():
         self.clave = clave
         self.servidor = servidor
         self.path = path
+        
+
+        mt5.initialize(login = self.nombre, password = self.clave, server = self.servidor, path = self.path)
+        self.inicializado = True
     
     def modify_orders(self, symb: str,ticket:int,stop_loss:float = None,take_profit:float = None,type_order = mt5.ORDER_TYPE_BUY,type_fill=mt5.ORDER_FILLING_FOK) -> None:
 
