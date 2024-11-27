@@ -54,10 +54,10 @@ class Robots_Ur():
 
         if pendiente > 0 and p_values[1] < max_p_value:
             lotaje = bfs.calculate_position_size(simbolo, tradeinfo, 0.05)
-            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_BUY, 0,0)
+            bfs._open_operations(simbolo,lotaje,mt5.ORDER_TYPE_BUY, 0,0)
         if pendiente < 0 and p_values[1] < max_p_value:
             lotaje = bfs.calculate_position_size(simbolo, tradeinfo, 0.05)
-            bfs.open_operations(simbolo,lotaje,mt5.ORDER_TYPE_SELL, 0,0)
+            bfs._open_operations(simbolo,lotaje,mt5.ORDER_TYPE_SELL, 0,0)
     
     def robot_anomalia(self,simbolo,periodo,lot_size,veces_sigma,periodo_ema):
 
@@ -74,9 +74,9 @@ class Robots_Ur():
         ultima_diferencia = data['diff_media'].iloc[-1]
 
         if ultima_diferencia > sigma*veces_sigma:
-            bfs.open_operations(simbolo,lot_size,mt5.ORDER_TYPE_SELL,'Anomalía')
+            bfs._open_operations(simbolo,lot_size,mt5.ORDER_TYPE_SELL,'Anomalía')
         elif ultima_diferencia < sigma*veces_sigma:
-            bfs.open_operations(simbolo,lot_size,mt5.ORDER_TYPE_BUY,'Anomalía')
+            bfs._open_operations(simbolo,lot_size,mt5.ORDER_TYPE_BUY,'Anomalía')
         else:
             print('No se cumplieron las condiciones de entrada')
 
