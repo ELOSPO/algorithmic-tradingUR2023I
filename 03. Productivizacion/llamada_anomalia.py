@@ -9,10 +9,11 @@ password = 123
 # user_pass = input('Ingrese contraseña maestra: ')
 
 # if user_pass == password:
-lista_simbolos = ['TSLA','XAUUSD','EURGBP']
+lista_simbolos = ['XAUUSD']
 robot = Robots_Ur()
 while True:
     for simbolo in lista_simbolos:
+        print(simbolo)
         robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M1,0.5,2,30)
         robot.robot_anomalia(simbolo,mt5.TIMEFRAME_M5,0.1,3,100)
     time.sleep(60)

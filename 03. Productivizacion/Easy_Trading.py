@@ -202,7 +202,7 @@ class Basic_funcs():
 
     def sell(self,symbol,volumen,nom_bot:str='Py',sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK):
         '''
-        Open a shor trade
+        Open a short trade
         '''
         self._open_operations(symbol,volumen,mt5.ORDER_TYPE_SELL,nom_bot,sl,tp,type_fill)
           
