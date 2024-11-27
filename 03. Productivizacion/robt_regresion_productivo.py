@@ -12,7 +12,7 @@ import pandas_ta as ta
 nombre = 67043467
 clave = 'Genttly.2022'
 servidor = 'RoboForex-ECN'
-path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
+path = r'C:\Program Files\RoboForex - MetaTrader 5\terminal64.exe'
 # nombre = input('Ingrese su login: ')
 # clave = input('Ingrese su contraseña: ')
 
