@@ -343,35 +343,73 @@ class Basic_funcs():
 
         return k_c
 
-    def calculate_position_size(self,symbol:str, tradeinfo:float, per_to_risk:float) -> float:
+    def calculate_position_size(self,symbol:str, capital:float, per_to_risk:float) -> float:
         '''
         Función para calcular el lotaje óptimo dado un símbolo, una pérdida y un porcentaje de la cuenta que se desea arriesgar.
 
         # Parámetros
 
         - symbol: Simbolo
-        - tradeinfo: diferencia entre el precio de apertura y el sl en valor absoluto
+        - capital: diferencia entre el precio de apertura y el sl en valor absoluto
         - per_to_risk: Porcentaje de la cuenta a arriesgar en cada trade
 
+        inspired on https://github.com/Quantreo/MetaTrader-5-AUTOMATED-TRADING-using-Python/blob/main/06_money_management.ipynb
+
         '''
-        print(symbol)
+        print(f"Total Account Capital: {capital}")      
+        leverage = mt5.account_info().leverage
+        print(f"LEVERAGE: {leverage}")
+        invested_capital = capital  * leverage * per_to_risk
+        
+        print(f"Leveraged Account Capital: {invested_capital}")
+        trade_size = mt5.symbol_info(symbol).trade_contract_size
+        
+        print(f"Trade Size: {trade_size}")
+        price = (mt5.symbol_info(symbol).ask + mt5.symbol_info(symbol).bid)/2
+        
+        print(f"PRICE: {price}")
+        lot_size = invested_capital / trade_size / price
+        
+        print(f"Lot size weighted by risk: {lot_size}")
+        min_lot = mt5.symbol_info(symbol).volume_min
+        
+        print(f"MIN LOT: {min_lot}")
 
-        mt5.symbol_select(symbol, True)
-        symbol_info_tick = mt5.symbol_info_tick(symbol)
-        symbol_info = mt5.symbol_info(symbol)
-
-        current_price = (symbol_info_tick.bid + symbol_info_tick.ask) / 2
-        sl = tradeinfo
-        tick_size = symbol_info.trade_tick_size
-
-        balance = mt5.account_info().balance
-        risk_per_trade = per_to_risk
-        ticks_at_risk = abs(current_price - sl) / tick_size
-        tick_value = symbol_info.trade_tick_value
-
-        position_size = round((balance * risk_per_trade) / (ticks_at_risk * tick_value),2)
-
-        return position_size
+        max_lot = mt5.symbol_info(symbol).volume_max
+        
+        print(f"MAX LOT: {max_lot}")
+ 
+        if min_lot<lot_size:
+        
+            number_decimal = str(min_lot)[::-1].find(".")
+        
+            print(f"NUMBER DECIMAL: {number_decimal}")
+            if number_decimal>0:
+        
+                lot_size_rounded = np.round(lot_size, number_decimal)
+        
+                print(f"LOT SIZE ROUNDED: {lot_size_rounded}")
+                
+                if lot_size < lot_size_rounded:
+        
+                    lot_size_rounded = np.round(lot_size_rounded - min_lot, number_decimal)
+        
+                    print(f"LOT DOWN ROUNDED: {lot_size_rounded}")
+            else:
+        
+                number_size_lot =  len(str(min_lot))
+                lot_size_rounded = int(np.round(lot_size, -number_size_lot))
+                if lot_size < lot_size_rounded:
+        
+                    lot_size_rounded = int(np.round(lot_size_rounded - number_size_lot, - number_size_lot))
+            
+            if lot_size_rounded>max_lot:
+        
+                lot_size_rounded = max_lot
+            
+            print(f"GOOD SIZE LOT: {lot_size_rounded}")
+        
+            return lot_size_rounded
     
     def get_today_calendar(self) -> pd.DataFrame:
         """Regresa un Dataframe con la información de las noticias del día contiene las columnas del simbolo y la intensidad"""
