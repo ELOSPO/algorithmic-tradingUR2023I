@@ -44,23 +44,25 @@ class Robot_adx():
         elif (last_adx < lim_inf) and (last_dif_adx > 0) and (pen_dif_adx < 0):
            self.bfs.sell(symbol=symbol,volumen = lotaje,tp =last_price + tp_points, nom_bot = 'ADX')
         
-    def bot_adx_forbt(self,prices_close,prices_high,prices_low,ventana_adx ):
+    def bot_adx_forbt(self,prices_close,prices_high,prices_low,ventana_adx,q_sup = 0.98, q_inf = 0.02 ):
         
         adx = ta.adx(pd.Series(prices_high), pd.Series(prices_low), pd.Series(prices_close), length = ventana_adx).iloc[:,0]
-        lim_sup= adx.quantile(0.95)
-        lim_inf = adx.quantile(0.05)
-        last_adx = adx.iloc[-1]
-        last_dif_adx = adx.iloc[-1] - adx.iloc[-2]
-        pen_dif_adx = adx.iloc[-2] - adx.iloc[-3]
-        last_price = prices_close.iloc[-1]
+        lim_sup= adx.quantile(q_sup)
+        lim_inf = adx.quantile(q_inf)
+        last_adx = adx
+        last_dif_adx = adx - adx.shift()
+        pen_dif_adx = adx.shift() - adx.shift(-2)
+        # last_price = prices_close.iloc[-1]
 
-        signal = 0
+        signal = np.where((last_adx > lim_sup) & (last_dif_adx < 0) & (pen_dif_adx > 0),1,
+                          np.where((last_adx < lim_inf) & (last_dif_adx > 0) & (pen_dif_adx < 0),-1,0)
+                          )
 
-        if (last_adx > lim_sup) and (last_dif_adx < 0) and (pen_dif_adx > 0):
-            signal = 1
+        # if (last_adx > lim_sup) and (last_dif_adx < 0) and (pen_dif_adx > 0):
+        #     signal = 1
             
-        elif (last_adx < lim_inf) and (last_dif_adx > 0) and (pen_dif_adx < 0):
-           signal = -1
+        # elif (last_adx < lim_inf) and (last_dif_adx > 0) and (pen_dif_adx < 0):
+        #    signal = -1
 
         return signal
 
