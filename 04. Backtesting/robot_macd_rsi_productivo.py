@@ -44,24 +44,28 @@ class Robots_202411():
 
     def rsimacd_bot_4bt(self, precio_cierre,sigma = 1.5, fast = 12, slow = 36, rsi_window = 14, rsi_sup = 60, rsi_inf = 40):
         
-        print(precio_cierre)
-        type(precio_cierre)
-        macd = pt.macd(pd.Series(precio_cierre),fast,slow)
+        df = pd.DataFrame()
+        df['close'] = pd.Series(precio_cierre)
+
+        macd = pt.macd(df['close'],fast,slow)
+        rsi_i = pt.rsi(df['close'],rsi_window)
+
         print(macd)
-        rsi_i = pt.rsi(pd.Series(precio_cierre),rsi_window)
         print(rsi_i)
 
-        last_macd = macd.iloc[:,0].iloc[-1]
-        prev_last_macd = macd.iloc[:,0].iloc[-2]
-        last_rsi = rsi_i.iloc[-1]
-        dif_rsi = rsi_i.iloc[-1] - rsi_i.iloc[-2]
-        last_price = pd.Series(precio_cierre).iloc[-1]
-        senal = ''
+        last_macd = macd.iloc[:,0]
+        prev_last_macd = macd.iloc[:,0].shift(-2)
+        last_rsi = rsi_i
+        dif_rsi = rsi_i - rsi_i.shift(-2)
+        last_price = df['close']
+        
 
-        if (prev_last_macd < 0) and (last_macd >= 0) and (dif_rsi > 0) and (last_rsi > rsi_sup):
-            senal = 'buy'
-        elif (prev_last_macd > 0) and (last_macd <= 0) and (dif_rsi < 0) and (last_rsi < rsi_inf):
-            senal = 'sell'
+        senal = np.where((prev_last_macd < 0) & (last_macd >= 0) & (dif_rsi > 0) & (last_rsi > rsi_sup),1,
+                         np.where((prev_last_macd > 0) & (last_macd <= 0) & (dif_rsi < 0) & (last_rsi < rsi_inf),-1,0))
+        # if (prev_last_macd < 0) and (last_macd >= 0) and (dif_rsi > 0) and (last_rsi > rsi_sup):
+        #     senal = 'buy'
+        # elif (prev_last_macd > 0) and (last_macd <= 0) and (dif_rsi < 0) and (last_rsi < rsi_inf):
+        #     senal = 'sell'
         
         return senal
 
