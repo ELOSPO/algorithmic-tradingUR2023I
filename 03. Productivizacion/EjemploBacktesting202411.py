@@ -145,13 +145,15 @@ adxb = Robot_adx(nombre, clave, servidor, path)
 class Estrategia_adx(Strategy):
     lim_sup_rsi = 80
     lim_inf_rsi = 30
-    adx_period = 25
+    adx_period = 3
+    q_sup = 0.96
+    q_inf = 0.01
 
     def init(self):
         self.prices_close = self.data.Close
         self.prices_low = self.data.Low
         self.prices_high = self.data.High
-        self.adx_signal = self.I(adxb.bot_adx_forbt, self.prices_close,self.prices_high,self.prices_low,10)
+        self.adx_signal = self.I(adxb.bot_adx_forbt, self.prices_close,self.prices_high,self.prices_low,self.adx_period,self.q_sup,self.q_inf)
         
 
     def next(self):
@@ -160,10 +162,27 @@ class Estrategia_adx(Strategy):
             
             if self.adx_signal == 1:
                 self.position.close()
-                self.buy(size = 0.01)
+                self.buy()
             elif self.adx_signal == -1:
                 self.position.close()
-                self.sell(size = 0.01)
+                self.sell()
 
 backtesting_adx = Backtest(data_train,Estrategia_adx,cash = 10_000,exclusive_orders=True)
 stats_adx = backtesting_adx.run()
+
+stats_opt, hm = backtesting_adx.optimize(adx_period = list(range(3,90,1)),
+                                         q_sup = [0.99,0.98,0.97,0.96,0.95,0.94],
+                                         q_inf = [0.01,0.02,0.03,0.04,0.05,0.06],                                        
+                                         maximize= 'Win Rate [%]', return_heatmap = True)
+
+list_data = [data_test1,data_test2,data_test3,data_test4,
+             data_test5,data_test6,data_test7,data_test8,data_test9,data_test10,data_test11,data_test12]
+list_results = []
+
+for datos in list_data:
+    backtesting_rsi = Backtest(datos,Estrategia_adx,cash = 10_000,exclusive_orders=True)
+    stats_rsi = backtesting_rsi.run()
+    list_results.append(stats_rsi['Profit Factor'])
+
+pd.Series(list_results).mode()
+

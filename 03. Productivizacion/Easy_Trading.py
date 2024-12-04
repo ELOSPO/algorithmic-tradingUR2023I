@@ -339,8 +339,12 @@ class Basic_funcs():
 
         
         """
-        k_c = (profit_factor*win_rate + (win_rate-1))/profit_factor
+        
+        k_c = (profit_factor*win_rate + win_rate -1)/profit_factor
 
+        if k_c < 0:
+            k_c = 0.01
+        
         return k_c
 
     def calculate_position_size(self,symbol:str, capital:float, per_to_risk:float) -> float:

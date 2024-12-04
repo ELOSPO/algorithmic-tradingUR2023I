@@ -22,7 +22,7 @@ class Robot_adx():
         self.path = path
         self.bfs = Basic_funcs(self.nombre, self.clave, self.servidor,self.path)
 
-    def bot_adx(self,timeframe,symbol,ventana_adx = 27,q_sup = 0.98, q_inf = 0.02, pips4tp = 30,lotaje = 0.05):
+    def bot_adx(self,timeframe,symbol,profit_factor,win_rate,ventana_adx = 27,q_sup = 0.98, q_inf = 0.02, pips4tp = 30,):
         datos = self.bfs.extract_data(symbol,timeframe,9999)
 
         datos['adx'] = ta.adx(datos['high'], datos['low'], datos['close'], length = ventana_adx).iloc[:,0]
@@ -39,10 +39,14 @@ class Robot_adx():
         pip_unit = 1**(-count_decimals)
         tp_points = pip_unit*pips4tp
 
+        kc = self.bfs.kelly_criterion_pct_risk(win_rate,profit_factor)
+        balance, profit_account, equity, free_margin = self.bfs.info_account()
+        lot_size = self.bfs.calculate_position_size(symbol,balance,kc)
+
         if (last_adx > lim_sup) and (last_dif_adx < 0) and (pen_dif_adx > 0):
-            self.bfs.buy(symbol=symbol,volumen = lotaje,tp = last_price - tp_points, nom_bot = 'ADX')
+            self.bfs.buy(symbol=symbol,volumen = lot_size,tp = last_price - tp_points, nom_bot = 'ADX')
         elif (last_adx < lim_inf) and (last_dif_adx > 0) and (pen_dif_adx < 0):
-           self.bfs.sell(symbol=symbol,volumen = lotaje,tp =last_price + tp_points, nom_bot = 'ADX')
+           self.bfs.sell(symbol=symbol,volumen = lot_size,tp =last_price + tp_points, nom_bot = 'ADX')
         
     def bot_adx_forbt(self,prices_close,prices_high,prices_low,ventana_adx,q_sup = 0.98, q_inf = 0.02 ):
         
