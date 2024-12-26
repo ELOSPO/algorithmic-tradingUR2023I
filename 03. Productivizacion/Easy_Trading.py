@@ -194,6 +194,22 @@ class Basic_funcs():
         
         return result
     
+    def close_partial(self,type_op:mt5,id_position:int, symbol:str, volume_to_close:float):
+
+        ''' Función para cerrar parcial una operación '''
+        order = {
+            'action' : mt5.TRADE_ACTION_DEAL,
+            'type': type_op,
+            'position': id_position,
+            'symbol' : symbol,
+            'volume' : volume_to_close
+                }
+        
+        result = mt5.order_send(order)
+        # logger.info(f'A partial close has been executed for position {id_position} with a volume of {volume_to_close}')
+
+        return result
+    
     def buy(self,symbol,volumen,nom_bot:str='Py',sl:float= None,tp:float = None,type_fill= mt5.ORDER_FILLING_FOK):
         '''
         Open a long trade
@@ -493,7 +509,7 @@ class Basic_funcs():
 
         return balance, profit_account, equity, free_margin
 
-    def get_data_from_dates(self,year_ini:int,month_ini:int,day_ini:int,year_fin:int,month_fin:int,day_fin:int,symbol:str,timeframe:mt5, for_bt:bool = False) -> pd.DataFrame():
+    def get_data_from_dates(self,year_ini:int,month_ini:int,day_ini:int,year_fin:int,month_fin:int,day_fin:int,symbol:str,timeframe:mt5, for_bt:bool = False) -> pd.DataFrame:
         '''
         Función para obtener los datos de un símbolo específico en un rango de fechas determinado. Para usar la función apra retornar 
         el formato de backtesting, debe usarse con el parámetro for_bt = True

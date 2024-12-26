@@ -16,7 +16,7 @@ class Robots_202411():
         self.path = path
         self.bfs = Basic_funcs(self.nombre,self.clave,self.servidor,self.path)
 
-    def rsimacd_bot(self,symbol,lotsize, timeframe, sigma = 1.5, points_tp = 30, points_sl = 10, fast = 12, slow = 36, rsi_window = 14, rsi_sup = 60, rsi_inf = 40):
+    def rsimacd_bot(self,symbol,win_rate,profit_factor, timeframe, sigma = 1.5, points_tp = 30, points_sl = 10, fast = 12, slow = 36, rsi_window = 14, rsi_sup = 60, rsi_inf = 40):
         datos = self.bfs.extract_data(symbol,timeframe,9999)
 
         macd = pt.macd(datos['close'],fast,slow)
@@ -36,6 +36,10 @@ class Robots_202411():
         pip_unit = tick_unit*10
         tp_pips = points_tp*pip_unit 
         sl_pips = points_sl*pip_unit
+        
+        balance, profit_account, equity, free_margin = self.bfs.info_account()
+        kc = self.bfs.kelly_criterion_pct_risk(win_rate,profit_factor)
+        lotsize = self.bfs.calculate_position_size(symbol,balance,kc)
 
         if (prev_last_macd < 0) and (last_macd >= 0) and (dif_rsi > 0) and (last_rsi > rsi_sup):
             self.bfs.buy(symbol,lotsize,'RSIMACD',last_price - sl_pips,last_price + tp_pips)
@@ -44,24 +48,28 @@ class Robots_202411():
 
     def rsimacd_bot_4bt(self, precio_cierre,sigma = 1.5, fast = 12, slow = 36, rsi_window = 14, rsi_sup = 60, rsi_inf = 40):
         
-        print(precio_cierre)
-        type(precio_cierre)
-        macd = pt.macd(pd.Series(precio_cierre),fast,slow)
+        df = pd.DataFrame()
+        df['close'] = pd.Series(precio_cierre)
+
+        macd = pt.macd(df['close'],fast,slow)
+        rsi_i = pt.rsi(df['close'],rsi_window)
+
         print(macd)
-        rsi_i = pt.rsi(pd.Series(precio_cierre),rsi_window)
         print(rsi_i)
 
-        last_macd = macd.iloc[:,0].iloc[-1]
-        prev_last_macd = macd.iloc[:,0].iloc[-2]
-        last_rsi = rsi_i.iloc[-1]
-        dif_rsi = rsi_i.iloc[-1] - rsi_i.iloc[-2]
-        last_price = pd.Series(precio_cierre).iloc[-1]
-        senal = ''
+        last_macd = macd.iloc[:,0]
+        prev_last_macd = macd.iloc[:,0].shift(-2)
+        last_rsi = rsi_i
+        dif_rsi = rsi_i - rsi_i.shift(-2)
+        last_price = df['close']
+        
 
-        if (prev_last_macd < 0) and (last_macd >= 0) and (dif_rsi > 0) and (last_rsi > rsi_sup):
-            senal = 'buy'
-        elif (prev_last_macd > 0) and (last_macd <= 0) and (dif_rsi < 0) and (last_rsi < rsi_inf):
-            senal = 'sell'
+        senal = np.where((prev_last_macd < 0) & (last_macd >= 0) & (dif_rsi > 0) & (last_rsi > rsi_sup),1,
+                         np.where((prev_last_macd > 0) & (last_macd <= 0) & (dif_rsi < 0) & (last_rsi < rsi_inf),-1,0))
+        # if (prev_last_macd < 0) and (last_macd >= 0) and (dif_rsi > 0) and (last_rsi > rsi_sup):
+        #     senal = 'buy'
+        # elif (prev_last_macd > 0) and (last_macd <= 0) and (dif_rsi < 0) and (last_rsi < rsi_inf):
+        #     senal = 'sell'
         
         return senal
 

@@ -16,7 +16,7 @@ class Robots_202411():
         self.path = path
         self.bfs = Basic_funcs(self.nombre,self.clave,self.servidor,self.path)
 
-    def rsimacd_bot(self,symbol,lotsize, timeframe, sigma = 1.5, points_tp = 30, points_sl = 10, fast = 12, slow = 36, rsi_window = 14, rsi_sup = 60, rsi_inf = 40):
+    def rsimacd_bot(self,symbol,win_rate,profit_factor, timeframe, sigma = 1.5, points_tp = 30, points_sl = 10, fast = 12, slow = 36, rsi_window = 14, rsi_sup = 60, rsi_inf = 40):
         datos = self.bfs.extract_data(symbol,timeframe,9999)
 
         macd = pt.macd(datos['close'],fast,slow)
@@ -36,6 +36,10 @@ class Robots_202411():
         pip_unit = tick_unit*10
         tp_pips = points_tp*pip_unit 
         sl_pips = points_sl*pip_unit
+        
+        balance, profit_account, equity, free_margin = self.bfs.info_account()
+        kc = self.bfs.kelly_criterion_pct_risk(win_rate,profit_factor)
+        lotsize = self.bfs.calculate_position_size(symbol,balance,kc)
 
         if (prev_last_macd < 0) and (last_macd >= 0) and (dif_rsi > 0) and (last_rsi > rsi_sup):
             self.bfs.buy(symbol,lotsize,'RSIMACD',last_price - sl_pips,last_price + tp_pips)
