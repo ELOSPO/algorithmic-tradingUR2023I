@@ -79,6 +79,19 @@ class Basic_funcs():
         tabla['time']=pd.to_datetime(tabla['time'], unit='s')
 
         return tabla
+
+    def get_data_for_bt(self,timeframe,symbol,cantidad):
+
+        mt5.initialize( login = self.nombre, server = self.servidor, password = self.clave, path = self.path)
+        rates = mt5.copy_rates_from_pos(symbol, timeframe, 0, cantidad)
+        rates_frame = pd.DataFrame(rates)
+        rates_frame['time']=pd.to_datetime(rates_frame['time'], unit='s')
+        data = rates_frame.copy()
+        data = data.iloc[:,[0,1,2,3,4,5,7]]
+        data.columns = ['time','Open','High','Low','Close','Volume','OpenInterest']
+        data = data.set_index('time')
+
+        return data
     
     def obtener_ordenes_pendientes(self) -> pd.DataFrame:
         '''

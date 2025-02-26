@@ -51,6 +51,14 @@ mi_datos['ciudad'] = 'Bogotá'
 
 mi_datos['apellido_1'] = 'Ospina'
 
+mis_datos = {'nombre':'Sebastian','apellidos': 'Ospina Valencia','edad':33,'casado':True}
+print(mis_datos)
+
+mis_datos.update({'hijos':1,'ciudad':'Bogota'})
+print(mis_datos)
+
+mis_datos.pop('hijos')
+print(mis_datos)
 ###################### Dataframes ##############
 
 import pandas as pd
@@ -68,7 +76,9 @@ dict_ejemplo = {u'2012-07-01': 391,
  u'2012-07-06': 395}
 print(dict_ejemplo)
 
+
 data_ventas = pd.DataFrame.from_dict(dict_ejemplo,orient='index',columns=['ventas'])
+
 print(data_ventas)
 data_ventas.head(2)
 data_ventas.tail(2)
@@ -76,12 +86,16 @@ data_ventas.tail(2)
 data_close = pd.DataFrame.from_dict(dict_ejemplo,orient='index',columns=['close'])
 data_close['date'] = data_close.index
 data_close = data_close.reset_index(drop=True)
+data_close['open'] = [389,390,390,391,393,389]
 print(data_close)
 
 data_close['date']
 data_close['date'].iloc[3:]
 data_close['date'].iloc[-1]
 data_close.iloc[-3:]
+
+data_close['mean_price'] = (data_close['open'] + data_close['close'])/2
+print(data_close)
 
 ######################## Ciclo for ###################
 
@@ -192,6 +206,15 @@ for i in range(len(lista_num1)):
     print(f'{lista_num1[i]} es par')
   else:
     print(f'{lista_num1[i]} es impar')
+
+lista_resultados = []
+for i in (lista_4):
+  if i%2==0:
+    print(i, 'el número es par')
+    lista_resultados.append(f'{i} el número es par')
+  else:
+    print(i,'el número es impar')
+    lista_resultados.append(f'{i} el número es impar')
     
 ############### Funciones ###########################
 
@@ -224,6 +247,18 @@ def maquina_dividir(numero_1,numero_2):
         resultado = numero_1/numero_2
     return resultado
 
+#  Uso de Try except
+def maquina_dividir (numero1, numero2):
+  try:
+    numero2 != 0
+    resultado = numero1 / numero2
+  except:
+    resultado ="error por cero"
+  return resultado
+
+x = maquina_dividir (10,0)
+print(x)
+
 maquina_multiplicar(7,9)
 a = maquina_multiplicar(7,9)
 
@@ -242,3 +277,19 @@ def calculadora(numero_1,numero_2,operador):
     return resultado
 
 calculadora(7689,7535,'*')
+
+def maquina_sumar ( numero1, numero2 ):
+  resultado = numero1 + numero2
+  return resultado
+def maquina_restar ( numero1, numero2 ):
+  resultado = numero1 - numero2
+  return resultado
+def calculadora ( simbolo, numero1, numero2):
+  if str(numero1).isnumeric() and str(numero2).isnumeric():
+    if simbolo == "+":
+      resultado = maquina_sumar(numero1, numero2)
+  else:
+    resultado = "Deben ser numeros"
+  
+  return resultado
+x = calculadora ( "+", 3, 4)

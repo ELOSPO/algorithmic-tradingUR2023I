@@ -53,7 +53,7 @@ class Estrategia_simple_rsi(Strategy):
                 self.buy(size = 0.2)
 
 backtest_2 = Backtest(data,Estrategia_simple_rsi,cash=10_000,exclusive_orders=True)
-# stats_2 = backtest_2.run()
+stats_2 = backtest_2.run()
 stats_opt, hm = backtest_2.optimize(sigma = [1.5,2.5,3,3.5],
                                          fast = [6,12,24,18,36],
                                          slow = [42,48,64,72,96],
