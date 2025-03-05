@@ -6,7 +6,7 @@ import MetaTrader5 as mt5
 nombre = 67043467
 clave = 'Genttly.2022'
 servidor = 'RoboForex-ECN'
-path = r'C:\Program Files\MetaTrader 5\terminal64.exe'
+path = r'C:\Program Files\RoboForex - MetaTrader 5\terminal64.exe'
 
 # realizar conexión con MT5
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
@@ -82,25 +82,29 @@ for ticket in lista_tickets:
 
 
 ###########################################Cerramos todas las operaciones ####################
-for i in range(len(lista_tickets)):
-    ticket = lista_tickets[i]
-    type_op1 = lista_tipos_ops[i]
 
-    if type_op1 == 0:
-        type_op_opuesta = mt5.ORDER_TYPE_SELL
-    elif type_op1 == 1:
-        type_op_opuesta = mt5.ORDER_TYPE_BUY
-
-
-    close_order = {
-                    "action": mt5.TRADE_ACTION_DEAL,
-                    "type": type_op_opuesta,
-                    "symbol": "EURUSD",
-                    "volume": 0.05,
-                    "position": ticket,
-                    "type_filling": mt5.ORDER_FILLING_IOC
-              }
-    mt5.order_send(close_order)
+ops_abiertas = mt5.positions_get()
+df_positions = pd.DataFrame(list(ops_abiertas), columns = ops_abiertas[0]._asdict().keys())
+lista_tickets = df_positions['ticket'].tolist()
+for operacion in df_positions['ticket'].tolist():
+    df_operacion = df_positions[df_positions['ticket'] == operacion]
+    tipo_op = df_operacion['type'].iloc[0]
+    symol_op = df_operacion['symbol'].iloc[0]
+    vol_op = df_operacion['volume'].iloc[0]
+    if tipo_op == 0:
+        op_cierre = mt5.ORDER_TYPE_SELL
+    else:
+        op_cierre = mt5.ORDER_TYPE_BUY
+    
+    operacion_close = {
+        "action": mt5.TRADE_ACTION_DEAL,
+        "symbol": symol_op,
+        "volume": vol_op,
+        "type": op_cierre,
+        "position": operacion,
+        "type_filling": mt5.ORDER_FILLING_IOC}
+    
+    mt5.order_send(operacion_close)
 
 
 ##########################################Cerramos Operaciones con profit ####################
