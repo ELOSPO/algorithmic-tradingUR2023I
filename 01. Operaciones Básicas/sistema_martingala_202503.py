@@ -18,13 +18,14 @@ def extraer_datos(simbolo,num_periodos,timeframe):
 
     return tabla
 
-def enviar_operaciones(simbolo,tipo_operacion,lot_size):
+def enviar_operaciones(simbolo,tipo_operacion,lot_size,take_profit):
     orden_martin = {
                 "action": mt5.TRADE_ACTION_DEAL,
                 "symbol": simbolo,
                 "volume" : lot_size,
                 "type" : tipo_operacion,
                 "magic": 202503,
+                'tp': take_profit,
                 "comment": 'Martin2025',
                 "type_filling": mt5.ORDER_FILLING_IOC
                 }
@@ -60,9 +61,9 @@ while True:
 
     if num_op == 0:
         if ultimo_cierre >= lim_sup:
-            enviar_operaciones('EURUSD',mt5.ORDER_TYPE_SELL,0.01)
+            enviar_operaciones('EURUSD',mt5.ORDER_TYPE_SELL,0.01,ultima_media)
         elif ultimo_cierre <= lim_inf:
-            enviar_operaciones('EURUSD',mt5.ORDER_TYPE_BUY,0.01)
+            enviar_operaciones('EURUSD',mt5.ORDER_TYPE_BUY,0.01,ultima_media)
         else:
             print('Las condiciones de entrada no se satisfacieron')
             print(f'El precio del limite inferior es {lim_inf}')
@@ -73,9 +74,9 @@ while True:
             print('La ultima operación está en profit')
         elif ultimo_profit < 0:
             if ultimo_cierre >= lim_sup:
-                enviar_operaciones('EURUSD',mt5.ORDER_TYPE_SELL,0.01*2*num_op)
+                enviar_operaciones('EURUSD',mt5.ORDER_TYPE_SELL,0.01*2*num_op,ultima_media)
             elif ultimo_cierre <= lim_inf:
-                enviar_operaciones('EURUSD',mt5.ORDER_TYPE_BUY,0.01*2*num_op)
+                enviar_operaciones('EURUSD',mt5.ORDER_TYPE_BUY,0.01*2*num_op,ultima_media)
             else:
                 print('Las condiciones de entrada no se satisfacieron')
     
