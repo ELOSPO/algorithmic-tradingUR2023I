@@ -99,9 +99,13 @@ def bot_kelner(symbol,timeframe,lot_size,ventana_k,ventana_ema,factor_tp):
 
     open_trades = calculate_open_trades()
 
-    symbol_open_trades = open_trades.copy()
-    symbol_open_trades = symbol_open_trades[symbol_open_trades['symbol'] == symbol]
-    num_op_symbol = len(symbol_open_trades)
+    if len(open_trades) > 0:
+        symbol_open_trades = open_trades.copy()
+        symbol_open_trades = symbol_open_trades[symbol_open_trades['symbol'] == symbol]
+        num_op_symbol = len(symbol_open_trades)
+    
+    else:
+        num_op_symbol = 0
 
     if (last_close > lim_sup) and (is_green == 1) and (last_close > last_ema) and (num_op_symbol == 0):
         enviar_operaciones(symbol,
