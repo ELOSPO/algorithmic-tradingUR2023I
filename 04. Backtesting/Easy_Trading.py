@@ -352,7 +352,7 @@ class Basic_funcs():
 
         
         """
-        k_c = (profit_factor*win_rate + (win_rate-1))/profit_factor
+        k_c = (profit_factor*win_rate - (1-win_rate))/profit_factor
 
         return k_c
 
