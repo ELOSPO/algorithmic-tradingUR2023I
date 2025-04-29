@@ -23,6 +23,12 @@ Currently working on developing quantitative trading strategies using Python and
 ## algorithmic-tradingUR2023I
 Este repositorio contiene las funciones básicas del curso de Trading Algorítmico con Python y MT5 dictado en la Universidad del Rosario así como los robots desarrollados durante el curso
 
+## Update 1.1.2 29/04/2025
+
+The following Methods where updated:
+
+1. close_all_open_operations method was updated, a new parameter (type_filling) was introduced to make it more generizable across brokers.
+
 ## Update 1.1.1 26/06/2024
 
 The following Methods where updated:
