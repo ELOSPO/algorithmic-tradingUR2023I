@@ -222,13 +222,14 @@ class Basic_funcs():
         '''
         self._open_operations(symbol,volumen,mt5.ORDER_TYPE_SELL,nom_bot,sl,tp,type_fill)
           
-    def close_all_open_operations(self,data:pd.DataFrame) -> None:
+    def close_all_open_operations(self,data:pd.DataFrame, filling_mode = mt5.ORDER_FILLING_FOK) -> None:
         '''
         Cierra todas las operaciones que estén contenidas en un dataframe.
 
         # Parámetros
 
-        - par: Símbolo 
+        - par: Símbolo
+        - filling mode: Política de ejecución de la operación
         '''
         
         df_open_positions = data.copy()
@@ -252,9 +253,13 @@ class Basic_funcs():
                     'position': operacion,
                     # 'price': price_close,
                     'comment':'Cerrar posiciones',
-                    'type_filling': mt5.ORDER_FILLING_FOK
+                    'type_filling': filling_mode
                 }
-                mt5.order_send(close_request)
+
+                result = mt5.order_send(close_request)
+                # logger.info(result)
+                # logger.success(f'A short on {simbolo_operacion} was closed')
+
             if tipo_operacion == 0:
                 tip_op = mt5.ORDER_TYPE_SELL
                 close_request = {
@@ -265,9 +270,12 @@ class Basic_funcs():
                     'position': operacion,
                     # 'price': price_close,
                     'comment':'Cerrar posiciones',
-                    'type_filling': mt5.ORDER_FILLING_FOK
+                    'type_filling': filling_mode
                 }
-                mt5.order_send(close_request)
+
+                result = mt5.order_send(close_request)
+                # logger.info(result)
+                # logger.success(f'A long on {simbolo_operacion} was closed')
    
     def get_opened_positions(self,par:str = None) -> tuple:
         '''
