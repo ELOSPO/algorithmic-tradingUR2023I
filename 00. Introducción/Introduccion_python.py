@@ -77,11 +77,11 @@ dict_ejemplo = {u'2012-07-01': 391,
 print(dict_ejemplo)
 
 
-data_ventas = pd.DataFrame.from_dict(dict_ejemplo,orient='index',columns=['ventas'])
+data_precio = pd.DataFrame.from_dict(dict_ejemplo,orient='index',columns=['close'])
 
-print(data_ventas)
-data_ventas.head(2)
-data_ventas.tail(2)
+print(data_precio)
+data_precio.head(2)
+data_precio.tail(2)
 
 data_close = pd.DataFrame.from_dict(dict_ejemplo,orient='index',columns=['close'])
 data_close['date'] = data_close.index
@@ -91,7 +91,7 @@ print(data_close)
 
 data_close['date']
 data_close['date'].iloc[3:]
-data_close['date'].iloc[-1]
+data_close['close'].iloc[-1]
 data_close.iloc[-3:]
 
 data_close['mean_price'] = (data_close['open'] + data_close['close'])/2
@@ -153,6 +153,14 @@ for posicion in range(len(lista_3)):
 for posicion in range(len(lista_numeros)):
     print(lista_numeros[posicion])
 
+mi_diccionario = {'nombre': 'Sebastian', 'apellido_1': 'Ospina', 'apellido_2': 'Valencia', 'edad': 34, 'casado': False}
+
+for item1 in mi_diccionario.items():
+  print(item1)
+
+for key,value in mi_diccionario.items():
+  print(key,value)
+
 x = 3
 y = 10
 
@@ -176,6 +184,19 @@ for numero in lista_numeros:
     else:
         print('El número es impar')
 
+if (x<=y) and ('string' == 'string'):
+  print('Ambas condiciones son verdaderas')
+elif (x > y) and ('string' == 'string'):
+  print(' x es mayor a y')
+else:
+  print('string no es igual a string')
+
+if (x<=y) and ('string' == 'string'):
+  print('Ambas condiciones son verdaderas')
+if (x > y) and ('string' == 'string'):
+  print(' x es mayor a y')
+else:
+  print('string no es igual a string')
 nlista_numero = [1,2,3,4]
 
 for numero in nlista_numero:
@@ -215,8 +236,21 @@ for i in (lista_4):
   else:
     print(i,'el número es impar')
     lista_resultados.append(f'{i} el número es impar')
-    
+
+x = 1
+y = 10
+
+while x < y:
+   x = x + 1
+   print(x)
+
 ############### Funciones ###########################
+def maquina_suma2(numero_1, numero_2):
+  resultado = numero_1 + numero_2
+  ejecuto = True
+  return resultado, ejecuto
+
+resultado_op, ejecutado = maquina_suma2(454,3)
 
 def maquina_multiplicar(numero_1,numero_2):
     resultado = numero_1*numero_2
