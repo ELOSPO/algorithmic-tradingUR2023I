@@ -12,6 +12,7 @@ class Bot_bollinger():
         self.password = password
 
         if self.password == '456783':
+            print('contraseña correcta')
             self.bfs = Basic_funcs(nombre,clave,servidor,path)
         else:
             print('contraseña incorrecta')
