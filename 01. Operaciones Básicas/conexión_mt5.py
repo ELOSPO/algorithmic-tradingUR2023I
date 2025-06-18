@@ -4,7 +4,7 @@ import MetaTrader5 as mt5
 nombre = 67106046
 clave = 'Sebas.123'
 servidor = 'RoboForex-ECN'
-path = r'C:\Program Files\RoboForex - MetaTrader 5\terminal64.exe'
+path = r'C:\Program Files\RoboForex MT5 Terminal\terminal64.exe'
 
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 

@@ -1,5 +1,6 @@
 import pandas as pd
 import MetaTrader5 as mt5
+import datetime
 
 # Clase Septiembre 6 del 2023
 
@@ -435,6 +436,22 @@ request_remove = {
 
 mt5.order_send(request_remove)
 
+
+# Remover todas las operaciones pendientes
+
+pending_orders = mt5.orders_get()
+df_pending_orders = pd.DataFrame(list(pending_orders), columns = pending_orders[0]._asdict().keys())
+
+lista_tickets_pend = df_pending_orders['ticket'].unique().tolist()
+
+for op_pending in lista_tickets_pend:
+    request_remove = {'order': op_pending,
+                      'action': mt5.TRADE_ACTION_REMOVE}
+    
+    mt5.order_send(request_remove)
+
+# #############################################################################
+
 request_modify = {
                     "order": 336608382,
                     "action": mt5.TRADE_ACTION_MODIFY,
@@ -501,3 +518,48 @@ def enviar_operaciones(symbol,tipo_operacion, vol):
 for ordenes_pendientes in mt5.orders_get():
     # print(ordenes_pendientes.ticket)
     remove_order(ordenes_pendientes.ticket,mt5.ORDER_FILLING_IOC)
+
+
+#  #############################################################################
+#  Ejemplo close all trades con condición de profit
+
+def close_all_trades(df):
+    list_tickets = df['ticket'].unique().tolist()
+
+    for ticket in list_tickets:
+        print(ticket)
+        df_trade = df[df['ticket'] == ticket]
+        tipo_op =df_trade['type'].iloc[-1]
+        symbol_op = df_trade['symbol'].iloc[-1]
+        vol_op = df_trade['volume'].iloc[-1]
+
+        if tipo_op == 0:
+            op_cierre = mt5.ORDER_TYPE_SELL
+        else:
+            op_cierre = mt5.ORDER_TYPE_BUY
+
+        close_order = {'action': mt5.TRADE_ACTION_DEAL,
+                       'type': op_cierre,
+                       'position':ticket,
+                       'volume':vol_op,
+                       'symbol':symbol_op,
+                       'comment': 'Cerrar'
+                       ,'type_filling':mt5.ORDER_FILLING_FOK
+                       }
+
+        mt5.order_send(close_order)
+
+
+ops_abiertas = mt5.positions_get()
+df_positions = pd.DataFrame(list(ops_abiertas), columns = ops_abiertas[0]._asdict().keys())
+
+df_pos_toclose = df_positions
+if sum(df_positions['profit']) < -10:
+    close_all_trades(df_pos_toclose)
+elif sum(df_positions['profit'])> 10:
+    close_all_trades(df_pos_toclose)
+
+if datetime.datetime.now().hour == 19:
+    ops_abiertas = mt5.positions_get()
+    df_positions = pd.DataFrame(list(ops_abiertas), columns = ops_abiertas[0]._asdict().keys())
+    close_all_trades(df_positions)
