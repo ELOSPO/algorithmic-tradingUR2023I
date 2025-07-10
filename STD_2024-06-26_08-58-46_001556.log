@@ -1,7 +1,0 @@
-2024-06-26 08:58:46.002 | DEBUG    | __main__:<module>:5 - This is the first test of logurur
-2024-06-26 08:58:46.002 | INFO     | __main__:<module>:6 - This is a test of an info message
-2024-06-26 08:58:46.003 | SUCCESS  | __main__:simply_function:10 - A loop was completed at time {time}
-2024-06-26 08:59:16.006 | SUCCESS  | __main__:simply_function:10 - A loop was completed at time {time}
-2024-06-26 08:59:46.017 | SUCCESS  | __main__:simply_function:10 - A loop was completed at time {time}
-2024-06-26 09:00:16.024 | SUCCESS  | __main__:simply_function:10 - A loop was completed at time {time}
-2024-06-26 09:00:46.040 | SUCCESS  | __main__:simply_function:10 - A loop was completed at time {time}

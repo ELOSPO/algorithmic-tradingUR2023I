@@ -1,3 +1,0 @@
-2024-06-26 09:00:55.336 | DEBUG    | __main__:<module>:6 - This is the first test of logurur
-2024-06-26 09:00:55.337 | INFO     | __main__:<module>:7 - This is a test of an info message
-2024-06-26 09:00:55.337 | SUCCESS  | __main__:simply_function:12 - A loop was completed at time {time_f}
