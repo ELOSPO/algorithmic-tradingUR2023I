@@ -23,11 +23,17 @@ Currently working on developing quantitative trading strategies using Python and
 ## algorithmic-tradingUR2023I
 Este repositorio contiene las funciones básicas del curso de Trading Algorítmico con Python y MT5 dictado en la Universidad del Rosario así como los robots desarrollados durante el curso
 
-## Update 1.1.2 29/04/2025
+
+
+## Update 1.1.3 29/04/2025
 
 The following Methods where updated:
 
 1. close_all_open_operations method was updated, a new parameter (type_filling) was introduced to make it more generizable across brokers.
+
+## Update 1.1.2 26/12/2024
+
+1. A new method was added to Easy_Trading.py close_partial. This method could be used to close a partial volume of a trade. 
 
 ## Update 1.1.1 26/06/2024
 
@@ -42,6 +48,7 @@ The following Methods where updated:
 
 1. Open_operations is no longer a public method. If you want to keep using call it _open_operations()
 2. Two new methods were created from _open_operations: buy() and sell() This new methods replace the use of open_operations()
+
 
 
 ## Main Feature: Easy_Trading.py
