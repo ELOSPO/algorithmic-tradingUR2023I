@@ -174,12 +174,12 @@ class Estrategia_rsi(Strategy):
                 
                 sl_price = ultimo_precio + (self.puntos_tp/2)*pip_unit
                 tp_price = ultimo_precio - self.puntos_tp*pip_unit
-                self.sell(sl = sl_price, tp = tp_price)
+                self.sell(sl = sl_price, tp = tp_price, size = 0.40)
             elif self.rsi < self.lim_inf_rsi:
                 
                 sl_price = ultimo_precio - (self.puntos_tp/2)*pip_unit
                 tp_price = ultimo_precio + self.puntos_tp*pip_unit
-                self.buy(sl = sl_price, tp = tp_price)
+                self.buy(sl = sl_price, tp = tp_price, size = 0.40)
 
 
 datos = bfs.get_data_for_bt(mt5.TIMEFRAME_H1,'USDJPY',720)

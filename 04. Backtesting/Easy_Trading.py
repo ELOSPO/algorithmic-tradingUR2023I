@@ -391,6 +391,7 @@ class Basic_funcs():
         max_lot = mt5.symbol_info(symbol).volume_max
         
         print(f"MAX LOT: {max_lot}")
+        print(f" LOT: {lot_size}")
  
         if min_lot<lot_size:
         
@@ -421,6 +422,9 @@ class Basic_funcs():
                 lot_size_rounded = max_lot
             
             print(f"GOOD SIZE LOT: {lot_size_rounded}")
+            
+        elif lot_size < min_lot:
+            lot_size_rounded = min_lot
         
             return lot_size_rounded
     
