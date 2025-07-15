@@ -23,11 +23,24 @@ Currently working on developing quantitative trading strategies using Python and
 ## algorithmic-tradingUR2023I
 Este repositorio contiene las funciones básicas del curso de Trading Algorítmico con Python y MT5 dictado en la Universidad del Rosario así como los robots desarrollados durante el curso
 
+## Update 1.1.4 15/07/2025
 
+The following methods were updated:
+
+1. send_pending_order was modified in order to include the posibility of a expirationdate = None. 
+
+The following methods were added to Easy_Trading to simplify trading with pending orders:
+
+1. buy_limit
+2. sell_limit
+3. buy_stop
+4. sell_stop
+
+send_pending_orders remains as a public method
 
 ## Update 1.1.3 29/04/2025
 
-The following Methods where updated:
+The following Methods were updated:
 
 1. close_all_open_operations method was updated, a new parameter (type_filling) was introduced to make it more generizable across brokers.
 

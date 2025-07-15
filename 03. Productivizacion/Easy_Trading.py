@@ -537,7 +537,7 @@ class Basic_funcs():
         
         return rates_frame
     
-    def send_pending_order(self,symbol:str,volume:float,price:float,type_op:mt5,expirationdate,type_fill:mt5,sl:float=None,tp:float = None):
+    def send_pending_order(self,symbol:str,volume:float,price:float,type_op:mt5,expirationdate,type_fill:mt5,sl:float=None,tp:float = None,nombre_bot:str = 'Py'):
 
         '''Función apra enviar órdenes pendientes. Esta función siempre debe ser usada con un expiration date'''
 
@@ -553,12 +553,15 @@ class Basic_funcs():
                             "tp": tp,
                             "type_time":mt5.ORDER_TIME_SPECIFIED, 
                             "expiration": expirationdate, 
-                            "comment": "Pivot",
+                            "comment": nombre_bot,
                             "type_filling": type_fill
 
                             }
+            if expirationdate == None:
+                del pending_order["expiration"]
 
-            mt5.order_send(pending_order)
+            result = mt5.order_send(pending_order)
+            # logger.info(result)
 
         elif (sl != None) and ( tp == None):
 
@@ -571,12 +574,16 @@ class Basic_funcs():
                             "sl": sl,
                             "type_time":mt5.ORDER_TIME_SPECIFIED, 
                             "expiration": expirationdate, 
-                            "comment": "Pivot",
+                            "comment": nombre_bot,
                             "type_filling": type_fill
 
                             }
+            
+            if expirationdate == None:
+                del pending_order["expiration"]
 
-            mt5.order_send(pending_order)
+            result = mt5.order_send(pending_order)
+            logger.info(result)
 
         elif (sl == None) and ( tp != None):
 
@@ -589,12 +596,16 @@ class Basic_funcs():
                             "tp": tp,
                             "type_time":mt5.ORDER_TIME_SPECIFIED, 
                             "expiration": expirationdate, 
-                            "comment": "Pivot",
+                            "comment": nombre_bot,
                             "type_filling": type_fill
 
                             }
+            
+            if expirationdate == None:
+                del pending_order["expiration"]
 
-            mt5.order_send(pending_order)
+            result = mt5.order_send(pending_order)
+            logger.info(result)
         
         elif (sl == None) and ( tp == None):
             pending_order = {
@@ -605,12 +616,29 @@ class Basic_funcs():
                             "type": type_op,
                             "type_time":mt5.ORDER_TIME_SPECIFIED, 
                             "expiration": expirationdate, 
-                            "comment": "Pivot",
+                            "comment": nombre_bot,
                             "type_filling": type_fill
 
                             }
+            
+            if expirationdate == None:
+                del pending_order["expiration"]
 
-            mt5.order_send(pending_order)
+            result = mt5.order_send(pending_order)
+            # logger.info(result)
+    
+    def buy_limit(self,symbol:str,volume:float,price:float,expirationdate,type_fill:mt5,sl:float=None,tp:float = None,nombre_bot:str = 'Py'):
+        self.send_pending_order(self,symbol,volume,price,mt5.ORDER_TYPE_BUY_LIMIT,expirationdate,type_fill,sl,tp,nombre_bot)
+
+    def sell_limit(self,symbol:str,volume:float,price:float,expirationdate,type_fill:mt5,sl:float=None,tp:float = None,nombre_bot:str = 'Py'):
+        self.send_pending_order(self,symbol,volume,price,mt5.ORDER_TYPE_SELL_LIMIT,expirationdate,type_fill,sl,tp,nombre_bot)
+
+    def buy_stop(self,symbol:str,volume:float,price:float,expirationdate,type_fill:mt5,sl:float=None,tp:float = None,nombre_bot:str = 'Py'):
+        self.send_pending_order(self,symbol,volume,price,mt5.ORDER_TYPE_BUY_STOP,expirationdate,type_fill,sl,tp,nombre_bot)
+
+    def sell_stop(self,symbol:str,volume:float,price:float,expirationdate,type_fill:mt5,sl:float=None,tp:float = None,nombre_bot:str = 'Py'):
+        self.send_pending_order(self,symbol,volume,price,mt5.ORDER_TYPE_SELL_STOP,expirationdate,type_fill,sl,tp,nombre_bot)
+
 
     def get_history_data(self,from_date:datetime,nom_estrategia:str,symbol:str) -> tuple:
         """
