@@ -29,9 +29,13 @@ class Estrategia_muy_simple(Strategy):
             self.position.close()
             self.sell()
 
-data = bfs._get_data_for_bt(mt5.TIMEFRAME_H1,'EURUSD',9000)
-data['rsi'] = ta.rsi(data['Close'],14)
-data['rsi'].hist(bins = 40)
+data = bfs._get_data_for_bt(mt5.TIMEFRAME_H1,'XAUUSD',9000)
+data['Open'] =data['Open']/1000
+data['Close'] =data['Close']/1000
+data['High'] =data['High']/1000
+data['Low'] =data['Low']/1000
+# data['rsi'] = ta.rsi(data['Close'],14)
+# data['rsi'].hist(bins = 40)
 
 class Estrategia_rsi(Strategy):
     lim_sup_rsi = 90

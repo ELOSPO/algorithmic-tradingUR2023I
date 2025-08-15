@@ -628,16 +628,16 @@ class Basic_funcs():
             # logger.info(result)
     
     def buy_limit(self,symbol:str,volume:float,price:float,expirationdate,type_fill:mt5,sl:float=None,tp:float = None,nombre_bot:str = 'Py'):
-        self.send_pending_order(self,symbol,volume,price,mt5.ORDER_TYPE_BUY_LIMIT,expirationdate,type_fill,sl,tp,nombre_bot)
+        self.send_pending_order(symbol,volume,price,mt5.ORDER_TYPE_BUY_LIMIT,expirationdate,type_fill,sl,tp,nombre_bot)
 
     def sell_limit(self,symbol:str,volume:float,price:float,expirationdate,type_fill:mt5,sl:float=None,tp:float = None,nombre_bot:str = 'Py'):
-        self.send_pending_order(self,symbol,volume,price,mt5.ORDER_TYPE_SELL_LIMIT,expirationdate,type_fill,sl,tp,nombre_bot)
+        self.send_pending_order(symbol,volume,price,mt5.ORDER_TYPE_SELL_LIMIT,expirationdate,type_fill,sl,tp,nombre_bot)
 
     def buy_stop(self,symbol:str,volume:float,price:float,expirationdate,type_fill:mt5,sl:float=None,tp:float = None,nombre_bot:str = 'Py'):
-        self.send_pending_order(self,symbol,volume,price,mt5.ORDER_TYPE_BUY_STOP,expirationdate,type_fill,sl,tp,nombre_bot)
+        self.send_pending_order(symbol,volume,price,mt5.ORDER_TYPE_BUY_STOP,expirationdate,type_fill,sl,tp,nombre_bot)
 
     def sell_stop(self,symbol:str,volume:float,price:float,expirationdate,type_fill:mt5,sl:float=None,tp:float = None,nombre_bot:str = 'Py'):
-        self.send_pending_order(self,symbol,volume,price,mt5.ORDER_TYPE_SELL_STOP,expirationdate,type_fill,sl,tp,nombre_bot)
+        self.send_pending_order(symbol,volume,price,mt5.ORDER_TYPE_SELL_STOP,expirationdate,type_fill,sl,tp,nombre_bot)
 
 
     def get_history_data(self,from_date:datetime,nom_estrategia:str,symbol:str) -> tuple:

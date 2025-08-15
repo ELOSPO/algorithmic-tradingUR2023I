@@ -59,6 +59,10 @@ print(mis_datos)
 
 mis_datos.pop('hijos')
 print(mis_datos)
+
+mis_datos.keys()
+mis_datos.values()
+
 ###################### Dataframes ##############
 
 import pandas as pd
