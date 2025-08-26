@@ -39,8 +39,8 @@ elif rompe_abajo == 1:
 data['ma1'] = ta.ema(data['close'],12)
 data['ma2'] = ta.ema(data['close'],56)
 
-data['cruce_alza'] = np.where( (data['ma1'].shift() < data['ma2']) & (data['ma1'] > data['ma2']),1,0 )
-data['cruce_baja'] = np.where( (data['ma1'].shift() > data['ma2']) & (data['ma1'] < data['ma2']),1,0 )
+data['cruce_alza'] = np.where( (data['ma1'].shift() < data['ma2'].shift()) & (data['ma1'] > data['ma2']),1,0 )
+data['cruce_baja'] = np.where( (data['ma1'].shift() > data['ma2'].shift()) & (data['ma1'] < data['ma2']),1,0 )
 
 
 #  la lógica para determinar si hay una lateralidad es : esperar un 0 que el anterior sea un 1

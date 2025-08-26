@@ -4,7 +4,7 @@ import MetaTrader5 as mt5
 nombre = 67106046
 clave = 'Sebas.123'
 servidor = 'RoboForex-ECN'
-path = r'C:\Program Files\RoboForex MT5 Terminal\terminal64.exe'
+path = r'C:\Program Files\RoboForex - MetaTrader 5\terminal64.exe'
 
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 
@@ -12,7 +12,7 @@ mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 # https://www.mql5.com/es/docs/python_metatrader5
 
 # rates = mt5.copy_rates_range("USDJPY", mt5.TIMEFRAME_M5, '2021-03-31' ,'2015-03-31' ) 
-rates = mt5.copy_rates_from_pos('IBM',mt5.TIMEFRAME_M1,0,9999)
+rates = mt5.copy_rates_from_pos('XAUUSD',mt5.TIMEFRAME_M1,0,9999)
 tabla = pd.DataFrame(rates)
 tabla['time'] = pd.to_datetime(tabla['time'], unit = 's')
 
