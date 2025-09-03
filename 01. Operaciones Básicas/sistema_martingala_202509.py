@@ -43,6 +43,7 @@ while True:
 
     lim_superior = data['close'].mean() + 0.5*data['close'].std()
     lim_inferior = data['close'].mean() - 0.5*data['close'].std()
+    # Punto Medio Funciona como el Take Profit
     punto_medio = data['close'].mean()
     last_price = data['close'].iloc[-1]
 
