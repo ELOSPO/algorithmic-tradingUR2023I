@@ -30,6 +30,8 @@ def enviar_operaciones(simbolo,tipo_operacion,take_profit,lot_size):
     
     trade = mt5.order_send(orden)
 
+    return trade
+
 def extraer_operaciones_abiertas():
     try:
         open_positions = mt5.positions_get()
@@ -62,7 +64,7 @@ def close_all_trades(df):
                        'volume':vol_op,
                        'symbol':symbol_op,
                        'comment': 'Cerrar'
-                       ,'type_filling':mt5.ORDER_FILLING_FOK
+                       ,'type_filling':mt5.ORDER_FILLING_IOC
                        }
 
         mt5.order_send(close_order)
@@ -84,10 +86,12 @@ def estrategia_rsi(numero_pips,volume,symbol,umb_sup,umb_inf,max_loss,rsi_window
 
     if last_rsi >= umb_sup:
         tp = last_price + numero_pips*pip_unit
-        enviar_operaciones(symbol,mt5.ORDER_TYPE_BUY,tp,volume)
+        result_trade = enviar_operaciones(symbol,mt5.ORDER_TYPE_BUY,tp,volume)
+        print(result_trade)
     elif last_rsi <= umb_inf:
         tp = last_price - numero_pips*pip_unit
-        enviar_operaciones(symbol,mt5.ORDER_TYPE_SELL,tp,volume)
+        result_trade = enviar_operaciones(symbol,mt5.ORDER_TYPE_SELL,tp,volume)
+        print(result_trade)
     else:
         df_ops = extraer_operaciones_abiertas()
         if len(df_ops) > 0:
@@ -108,5 +112,5 @@ lista_symbolos = ['XAUUSD','USDJPY','EURUSD','USDCHF','NQM25']
 
 while True:
     for symbol in lista_symbolos:
-        estrategia_rsi(100,0.1,symbol,75,25,-50,23,mt5.TIMEFRAME_M1,0)
+        estrategia_rsi(100,0.1,symbol,51,49,-50,23,mt5.TIMEFRAME_M1,0)
     time.sleep(60)
