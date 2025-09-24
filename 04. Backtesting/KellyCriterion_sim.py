@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 
@@ -41,15 +42,15 @@ def multiple_simulations(win_rate: float, risk_reward: float, n_trades: int = 10
     return all_runs
 
 
-win_rate = 0.6 # probabilidad de ganar 40%
-risk_reward = 1.5 # ratio riesgo/beneficio 3:1
-n_trades = 100 # número de operaciones
-n_sims = 30 # número de simulaciones
+win_rate = 0.53 # probabilidad de ganar 40%
+profit_factor = 1.1 # ratio riesgo/beneficio 3:1
+n_trades = 40 # número de operaciones
+n_sims = 100 # número de simulaciones
 
 
 # Simulación múltiple
-simulations = multiple_simulations(win_rate, risk_reward, n_trades, n_sims=n_sims)
-f = kelly_fraction(win_rate, risk_reward)
+simulations = multiple_simulations(win_rate, profit_factor, n_trades, n_sims=n_sims)
+f = kelly_fraction(win_rate, profit_factor)
 
 
 print(f"Fracción de Kelly: {f:.2%}")
@@ -57,11 +58,13 @@ print(f"Fracción de Kelly: {f:.2%}")
 
 # Plot
 plt.figure(figsize=(10,6))
+last_results = []
 for run in simulations:
+    last_results.append(run[-1])
     plt.plot(run, alpha=0.6)
 
 
-plt.title(f"Evolución del Equity con Kelly (WR={win_rate*100:.1f}%, RR={risk_reward}:1, {n_sims} simulaciones)")
+plt.title(f"Evolución del Equity con Kelly (WR={win_rate*100:.1f}%, RR={profit_factor}:1, {n_sims} simulaciones)")
 plt.xlabel("Número de trades")
 plt.ylabel("Equity")
 plt.grid(True)

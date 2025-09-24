@@ -134,10 +134,10 @@ class Estrategia_cruce_medias_opt(Strategy):
             elif (self.dif_ema[-1] < 0) and (self.dif_ema[-2] > 0):
                 self.sell(sl = self.data.Close[-1] + self.data.Close[-1]*self.tp_pct,
                          tp = self.data.Close[-1] - self.data.Close[-1]*self.sl_pct)
-            else:
-                print('No hay cruce')
-        else:
-            print('No hay datos suficientes')
+        #     else:
+        #         # print('No hay cruce')
+        # else:
+        #     print('No hay datos suficientes')
 
 datos = bfs.get_data_for_bt(mt5.TIMEFRAME_H1,'AMZN',9999)
 bt3 = Backtest(datos,Estrategia_cruce_medias_opt,cash=1000,exclusive_orders=True)
