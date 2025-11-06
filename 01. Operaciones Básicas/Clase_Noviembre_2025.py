@@ -138,3 +138,54 @@ mt5.order_send(orden_compra_con_sl_tp)
 
 
 mt5.account_info()
+
+def enviar_operaciones(order_type, symbol,lotsize,comment,sl,tp):
+
+    orden_compra_con_sl_tp = {'action': mt5.TRADE_ACTION_DEAL,
+                'type':order_type,
+                'symbol': symbol,
+                'volume':lotsize,
+                'sl': sl,
+                'tp': tp,
+                'type_filling':mt5.ORDER_FILLING_FOK,
+                'comment': comment
+                }
+
+    if sl == None:
+        orden_compra_con_sl_tp.pop('sl')
+    if tp == None:
+        orden_compra_con_sl_tp.pop('tp')
+
+    return mt5.order_send(orden_compra_con_sl_tp)
+
+def enviar_ordenes_pendientes(order_type, entry_price, symbol,lotsize,comment,sl,tp):
+    orden_compra_pendiente = {'action': mt5.TRADE_ACTION_PENDING,
+                'type':order_type,
+                'price':entry_price,
+                'symbol': symbol,
+                'volume':lotsize,
+                'sl': sl,
+                'tp': tp,
+                'type_filling':mt5.ORDER_FILLING_FOK,
+                'comment': comment
+                }
+    if sl == None:
+        orden_compra_pendiente.pop('sl')
+    if tp == None:
+        orden_compra_pendiente.pop('tp')
+
+    mt5.order_send(orden_compra_pendiente)
+
+
+symbols_tot = mt5.symbols_get()
+info_symbols_df = pd.DataFrame(list(symbols_tot), columns = symbols_tot[0]._asdict())
+
+list_of_symbols = info_symbols_df['name'].iloc[0:10].tolist()
+
+for symbol in list_of_symbols:
+    enviar_operaciones(mt5.ORDER_TYPE_BUY,symbol,0.01,'SOV',None,None)
+
+for symbol in list_of_symbols:
+    enviar_ordenes_pendientes(mt5.ORDER_TYPE_BUY_STOP,
+                               mt5.symbol_info_tick(symbol).bid + 0.015,
+                               symbol,0.01,'SOVP',None,None)
