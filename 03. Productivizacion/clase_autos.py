@@ -116,3 +116,35 @@ suzuki.apagar_auto()
 txl = Creacion_autos('TXL','Toyota',2800,'negro')
 
 txl.cilindraje
+
+
+class Creacion_autos():
+    def __init__(self,fabricante,color,cilindraje,cantidad_puertas,pasajeros):
+        self.fabricante = fabricante
+        self.color = color
+        self.cilindraje = cilindraje
+        self.cpuertas = cantidad_puertas
+        self.pasajeros = pasajeros
+        self.encendido = False
+    
+    def encender_motor(self):
+        if self.encendido == False:
+            self.encendido = True
+        else:
+            print(f'el {self.fabricante} ya está encendido')
+    
+    def apagar_motor(self):
+        if self.encendido == True:
+            self.encendido = False
+        else:
+            print(f'el {self.fabricante} ya está apagado')
+
+
+
+
+ferrari = Creacion_autos('ferrari','rojo',2800,2,2)
+
+ferrari.encendido
+
+ferrari.encender_motor()
+ferrari.apagar_motor()
