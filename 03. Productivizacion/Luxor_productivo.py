@@ -57,15 +57,15 @@ def robot_cruce(symbol,timeframe,slow_periods,fast_periods,tp_pips,max_hour,min_
 
         bfs.send_pending_order(mt5.ORDER_TYPE_BUY_STOP,last_low,symbol,0.01,'SOVCR',sl_price,tp_price,int(hora_expiracion.timestamp()))
 
-while True:
-    symbols_tot = mt5.symbols_get()
-    info_symbols_df = pd.DataFrame(list(symbols_tot), columns = symbols_tot[0]._asdict())
-    list_of_symbols = info_symbols_df['name'].tolist()
+# while True:
+#     symbols_tot = mt5.symbols_get()
+#     info_symbols_df = pd.DataFrame(list(symbols_tot), columns = symbols_tot[0]._asdict())
+#     list_of_symbols = info_symbols_df['name'].tolist()
 
-    for symbol in list_of_symbols:
-        robot_cruce(symbol,mt5.TIMEFRAME_M30,44,1,168,23,18)
+#     for symbol in list_of_symbols:
+#         robot_cruce(symbol,mt5.TIMEFRAME_M30,44,1,168,23,18)
 
-    time.sleep(60*30)
+#     time.sleep(60*30)
 
 
 
