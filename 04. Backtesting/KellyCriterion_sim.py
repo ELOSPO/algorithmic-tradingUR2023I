@@ -42,10 +42,10 @@ def multiple_simulations(win_rate: float, risk_reward: float, n_trades: int = 10
     return all_runs
 
 
-win_rate = 0.53 # probabilidad de ganar 40%
-profit_factor = 1.1 # ratio riesgo/beneficio 3:1
-n_trades = 40 # número de operaciones
-n_sims = 100 # número de simulaciones
+win_rate = 0.63 # probabilidad de ganar 40%
+profit_factor = 2.3 # ratio riesgo/beneficio 3:1
+n_trades = 7 # número de operaciones
+n_sims = 10 # número de simulaciones
 
 
 # Simulación múltiple
