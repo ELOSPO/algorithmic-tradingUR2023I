@@ -11,6 +11,10 @@ nombre = 67106046
 clave = 'Sebas.123'
 servidor = 'RoboForex-ECN'
 path = r'C:\Program Files\RoboForex - MetaTrader 5\terminal64.exe'
+nombre = 591015548
+clave = 'Sebas123!'
+servidor = 'FxPro-MT5 Demo'
+path = r'C:\Program Files\FxPro - MetaTrader 5\terminal64.exe'
 
 # realizar conexión con MT5
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
