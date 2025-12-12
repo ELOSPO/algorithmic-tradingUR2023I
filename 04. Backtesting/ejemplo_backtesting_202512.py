@@ -20,7 +20,7 @@ class Estrategia_simple(Strategy):
     def next(self):
         if self.data.Close[-1] > self.data.Open[-1]:
             self.position.close()
-            self.buy()
+            self.buy(size = 0.01)
         elif self.data.Close[-1] < self.data.Open[-1]:
             self.position.close()
             self.sell()
@@ -78,7 +78,7 @@ class Estrategia_rsi_opt(Strategy):
 
 backtesting3 = Backtest(datos,Estrategia_rsi_opt,cash = 1000, exclusive_orders= True)
 
-stats_opt, hm = backtesting3.optimize(maximize= 'Sharpe Ratio',
+stats_opt, hm = backtesting3.optimize(maximize= 'Win Rate [%]',
                                       rsi_period = [7,14,21,28],
                                       lim_sup = [65,70,75,80],
                                       lim_inf = [35,30,25,20],
@@ -90,7 +90,7 @@ hm
 def create_list_of_params(heat_map_s):
     hm_df = pd.DataFrame(heat_map_s)
     hm_df['params'] = hm_df.index
-    sorted_df = hm_df.sort_values('Sharpe Ratio',ascending=False)
+    sorted_df = hm_df.sort_values('Win Rate [%]',ascending=False)
 
     list_of_params = []
     for j in range(len(sorted_df)):
@@ -105,7 +105,7 @@ def create_list_of_params(heat_map_s):
 
 hm_dict = create_list_of_params(hm)
 hm_df = pd.DataFrame.from_dict(hm_dict,orient= 'columns')
-hm_df['Sharpe'] = hm.sort_values(ascending= False).values
+hm_df['Win Rate [%]'] = hm.sort_values(ascending= False).values
 
 import plotly.graph_objects as go
 
@@ -113,11 +113,11 @@ import plotly.graph_objects as go
 fig = go.Figure(data=[go.Scatter3d(
     x=hm_df['rsi_period'],
     y=hm_df['lim_sup'],
-    z=hm_df['Sharpe'],
+    z=hm_df['Win Rate [%]'],
     mode='markers',
     marker=dict(
         size=6,
-        color=hm_df['Sharpe'],
+        color=hm_df['Win Rate [%]'],
         colorscale='Viridis',
         opacity=0.9
     )
@@ -127,9 +127,9 @@ fig.update_layout(
     scene=dict(
         xaxis_title='RSI Period',
         yaxis_title='Upper RSI Limit',
-        zaxis_title='Sharpe Ratio'
+        zaxis_title='Win Rate [%]'
     ),
-    title="3D Scatter of RSI Params vs Sharpe Ratio",
+    title="3D Scatter of RSI Params vs Win Rate [%]",
     width=900,
     height=650
 )
@@ -151,7 +151,7 @@ data_test13 = bfs.get_data_from_dates(2025,10,1,2025,10,31,'EURUSD',mt5.TIMEFRAM
 data_test14 = bfs.get_data_from_dates(2025,11,1,2025,11,26,'EURUSD',mt5.TIMEFRAME_H1,True)
 
 backtesting_opt = Backtest(set_train,Estrategia_rsi_opt,cash = 1000, exclusive_orders= True)
-stats_opt, hm = backtesting_opt.optimize(maximize= 'Sharpe Ratio',
+stats_opt, hm = backtesting_opt.optimize(maximize= 'Calmar Ratio',
                                       rsi_period = [7,14,21,28],
                                       lim_sup = [65,70,75,80],
                                       lim_inf = [35,30,25,20],
@@ -162,7 +162,7 @@ stats_opt, hm = backtesting_opt.optimize(maximize= 'Sharpe Ratio',
 class Estrategia_rsi_opt_result(Strategy):
 
     rsi_period = 28
-    lim_sup = 70
+    lim_sup = 75
     lim_inf = 25
 
 
@@ -183,16 +183,122 @@ class Estrategia_rsi_opt_result(Strategy):
 
 
 lista_sharpes = []
+lista_sharpes2 = []
+lista_retornos = []
+lista_retorno_bh = []
+
 lista_datos = [data_test4,data_test5, data_test6,data_test7,data_test8,
                data_test9,data_test10,data_test11,data_test12,data_test13,data_test14]
 
 for data in lista_datos:
     backtesting_optimized = Backtest(data,Estrategia_rsi_opt_result,cash = 1000, exclusive_orders= True)
     stats_result = backtesting_optimized.run()
-    sharpe_ratio = stats_result['Sharpe Ratio']
+    sharpe_ratio = stats_result['Win Rate [%]']
+    sharpe_ratio2 = stats_result['Calmar Ratio']
+    retorno = stats_result['Return [%]']
+    retornobh = stats_result['Buy & Hold Return [%]']
     lista_sharpes.append(sharpe_ratio)
+    lista_sharpes2.append(sharpe_ratio2)
+    lista_retornos.append(retorno)
+    lista_retorno_bh.append(retornobh)
 
 
 np.mean(pd.Series(lista_sharpes).dropna())
 
-pd.Series(lista_sharpes).hist(bins = 40)
+pd.Series(lista_sharpes2).hist(bins = 40)
+
+class Estrategia_rsi_sltp_opt(Strategy):
+
+    rsi_period = 14
+    lim_sup = 70
+    lim_inf = 30
+    factor_sl_tp = 3
+    pips_tp = 300
+
+
+
+    def init(self):
+        self.price_close = self.data.Close
+        self.price_open = self.data.Open
+        self.rsi_ind = self.I(ta.rsi,pd.Series(self.data.Close),self.rsi_period)
+
+    
+    def next(self):
+        if len(self.data) >= self.rsi_period:
+            if self.rsi_ind > self.lim_sup:
+                tp_value = self.data.Close[-1] - self.pips_tp*self.points
+                sl_value = self.data.Close[-1] + (self.pips_tp*self.points/self.factor_sl_tp)
+                self.sell(tp = tp_value,sl=sl_value)
+            elif self.rsi_ind < self.lim_inf:
+                tp_value = self.data.Close[-1] + self.pips_tp*self.points
+                sl_value = self.data.Close[-1] - (self.pips_tp*self.points/self.factor_sl_tp)
+                self.buy(tp = tp_value,sl=sl_value)
+            else:
+                self.position.close()
+
+
+Estrategia_rsi_sltp_opt.points = mt5.symbol_info('EURUSD').point
+backtesting6 = Backtest(set_train,Estrategia_rsi_sltp_opt,cash = 1000, exclusive_orders= True)
+stats6 = backtesting6.run()
+
+backtesting_opt = Backtest(set_train,Estrategia_rsi_sltp_opt,cash = 1000, exclusive_orders= True)
+stats_opt, hm = backtesting_opt.optimize(maximize= 'Win Rate [%]',
+                                      rsi_period = [7,14,21,28],
+                                      lim_sup = [65,70,75,80],
+                                      lim_inf = [35,30,25,20],
+                                      factor_sl_tp = [1,2,3,4],
+                                      pips_tp = [100,200,300,400],
+                                      return_heatmap= True)
+
+
+
+class Estrategia_rsi_sltp_opt(Strategy):
+
+    rsi_period = 28
+    lim_sup = 80
+    lim_inf = 25
+    factor_sl_tp = 4
+    pips_tp = 400
+
+
+
+    def init(self):
+        self.price_close = self.data.Close
+        self.price_open = self.data.Open
+        self.rsi_ind = self.I(ta.rsi,pd.Series(self.data.Close),self.rsi_period)
+
+    
+    def next(self):
+        if len(self.data) >= self.rsi_period:
+            if self.rsi_ind > self.lim_sup:
+                tp_value = self.data.Close[-1] - self.pips_tp*self.points
+                sl_value = self.data.Close[-1] + (self.pips_tp*self.points/self.factor_sl_tp)
+                self.sell(tp = tp_value,sl=sl_value)
+            elif self.rsi_ind < self.lim_inf:
+                tp_value = self.data.Close[-1] + self.pips_tp*self.points
+                sl_value = self.data.Close[-1] - (self.pips_tp*self.points/self.factor_sl_tp)
+                self.buy(tp = tp_value,sl=sl_value)
+            else:
+                self.position.close()
+
+lista_sharpes = []
+lista_sharpes2 = []
+lista_retornos = []
+lista_retorno_bh = []
+Estrategia_rsi_sltp_opt.points = mt5.symbol_info('EURUSD').point
+
+lista_datos = [data_test4,data_test5, data_test6,data_test7,data_test8,
+               data_test9,data_test10,data_test11,data_test12,data_test13,data_test14]
+
+for data in lista_datos:
+    backtesting_optimized = Backtest(data,Estrategia_rsi_sltp_opt,cash = 1000, exclusive_orders= True)
+    stats_result = backtesting_optimized.run()
+    sharpe_ratio = stats_result['Win Rate [%]']
+    sharpe_ratio2 = stats_result['Calmar Ratio']
+    retorno = stats_result['Return [%]']
+    retornobh = stats_result['Buy & Hold Return [%]']
+    lista_sharpes.append(sharpe_ratio)
+    lista_sharpes2.append(sharpe_ratio2)
+    lista_retornos.append(retorno)
+    lista_retorno_bh.append(retornobh)
+
