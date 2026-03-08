@@ -1,0 +1,992 @@
+% ╔══════════════════════════════════════════════════════════════════════════════╗
+% ║  Trading Algorítmico con Python y MetaTrader 5                              ║
+% ║  Plantilla LaTeX para Pandoc · XeLaTeX                                      ║
+% ╚══════════════════════════════════════════════════════════════════════════════╝
+
+\documentclass[12pt, a4paper, twoside, openright]{book}
+
+% ── Codificación ──────────────────────────────────────────────────────────────
+\usepackage{fontspec}
+\usepackage[spanish, es-noshorthands, es-noindentfirst]{babel}
+
+% ── Fuentes del libro ────────────────────────────────────────────────────────
+\setmainfont{Georgia}[Ligatures=TeX]
+\setmonofont{Consolas}[Scale=0.86]
+\setsansfont{Calibri}[Scale=0.96, Ligatures=TeX]
+
+% ── Caracteres Unicode ────────────────────────────────────────────────────────
+\usepackage{newunicodechar}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{↑}{\ensuremath{\uparrow}}
+\newunicodechar{↓}{\ensuremath{\downarrow}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{∑}{\ensuremath{\sum}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{σ}{\ensuremath{\sigma}}
+\newunicodechar{ε}{\ensuremath{\varepsilon}}
+\newunicodechar{μ}{\ensuremath{\mu}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{₀}{\ensuremath{_{0}}}
+\newunicodechar{₁}{\ensuremath{_{1}}}
+\newunicodechar{₂}{\ensuremath{_{2}}}
+\newunicodechar{₃}{\ensuremath{_{3}}}
+\newunicodechar{₄}{\ensuremath{_{4}}}
+\newunicodechar{²}{\ensuremath{^{2}}}
+\newunicodechar{³}{\ensuremath{^{3}}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{★}{\ensuremath{\star}}
+\newunicodechar{✓}{\checkmark}
+\newunicodechar{─}{\textendash}
+\newunicodechar{═}{=}
+
+% ── Página y márgenes ─────────────────────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=2.8cm, bottom=2.8cm,
+  inner=3.0cm, outer=2.2cm,
+  headheight=15pt, headsep=12pt, footskip=28pt
+]{geometry}
+
+% ── Colores (prefijo bk para evitar colisión con palabras en español) ─────────
+\usepackage{xcolor}
+\definecolor{bkblue}  {HTML}{1a3a5c}
+\definecolor{bkgold}  {HTML}{f0a500}
+\definecolor{bklink}  {HTML}{1555a0}
+\definecolor{bkcodebg}{HTML}{1e2b3a}
+\definecolor{bkcodefg}{HTML}{e0eaf2}
+\definecolor{bkcodebr}{HTML}{3a5a80}
+\definecolor{bkgray}  {HTML}{707070}
+
+% ── Imágenes ─────────────────────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{float}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth, keepaspectratio}
+
+% ── Hipervínculos ─────────────────────────────────────────────────────────────
+\usepackage[
+  unicode=true,
+  colorlinks=true,
+  linkcolor=bkblue,
+  urlcolor=bklink,
+  citecolor=bkblue,
+  breaklinks=true
+]{hyperref}
+\hypersetup{
+  pdftitle={Trading Algoritmico con Python y MetaTrader 5},
+  pdfauthor={Sebastian Ospina Valencia}
+}
+\usepackage{url}
+\urlstyle{same}
+
+% ── Encabezados y pies — \nouppercase protege los colores ────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\color{bkgray}\textit{\nouppercase{\leftmark}}}
+\fancyhead[RO]{\small\color{bkgray}\textit{\nouppercase{\rightmark}}}
+\fancyfoot[LE,RO]{\small\color{bkblue}\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headrule}{%
+  \vskip -0.4pt\color{bkgold!60}\hrule width\headwidth height\headrulewidth\vskip 0pt}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[LE,RO]{\small\color{bkblue}\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
+
+% ── Estilo de capítulos ───────────────────────────────────────────────────────
+\usepackage{titlesec}
+
+% \protect\color{} evita que \MakeUppercase rompa el nombre del color
+\titleformat{\chapter}[display]
+  {\normalfont\sffamily\bfseries\protect\color{bkblue}}
+  {%
+    \vspace{-8pt}%
+    \textcolor{bkgold}{\rule{\linewidth}{2.5pt}}\\[-4pt]%
+    \hfill\fontsize{72}{72}\selectfont\color{bkgold!25}\thechapter%
+  }
+  {-18pt}
+  {\fontsize{20}{24}\selectfont\raggedright}
+  [{\vspace{4pt}\textcolor{bkgold}{\rule{\linewidth}{1pt}}}]
+
+\titlespacing*{\chapter}{0pt}{0pt}{24pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries\protect\color{bkblue}}
+  {\color{bkgold}\thesection}
+  {0.8em}{}
+  [{\color{bkblue!20}\vspace{1pt}\hrule height 0.4pt}]
+\titlespacing{\section}{0pt}{16pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\protect\color{bkblue}}
+  {\color{bkgold!70}\thesubsection}{0.7em}{}
+\titlespacing{\subsection}{0pt}{10pt}{3pt}
+
+\titleformat{\subsubsection}
+  {\normalfont\small\bfseries\itshape\protect\color{bkblue!70}}
+  {}{0em}{}
+\titlespacing{\subsubsection}{0pt}{8pt}{2pt}
+
+% ── Tabla de contenidos ───────────────────────────────────────────────────────
+\usepackage{tocloft}
+\setlength{\cftbeforechapskip}{5pt}
+\renewcommand{\cftchapfont}{\bfseries\color{bkblue}}
+\renewcommand{\cftchappagefont}{\bfseries\color{bkblue}}
+\renewcommand{\cftsecfont}{\small\color{bkgray}}
+\renewcommand{\cftsecpagefont}{\small\color{bkgray}}
+\renewcommand{\cftchapleader}{\color{bkgold!50}\cftdotfill{\cftdotsep}}
+\setcounter{tocdepth}{1}
+
+% ── Código fuente — pandoc breezedark highlighting ────────────────────────────
+% Nota: fancyvrb y color los carga pandoc en 
+
+% Caja oscura para código (mdframed)
+\usepackage{mdframed}
+
+\mdfdefinestyle{codestyle}{
+  backgroundcolor  = bkcodebg,
+  linecolor        = bkcodebr,
+  linewidth        = 0.7pt,
+  innerleftmargin  = 8pt,
+  innerrightmargin = 8pt,
+  innertopmargin   = 5pt,
+  innerbottommargin= 5pt,
+  skipabove        = 6pt,
+  skipbelow        = 6pt,
+  roundcorner      = 3pt
+}
+
+% Macros de resaltado de pandoc (define Shaded, NormalTok, KeywordTok, etc.)
+
+
+% Redefinir Shaded con la caja oscura.
+% Usa \@ifundefined por si  estaba vacío (sin bloques de código).
+\makeatletter
+\@ifundefined{Shaded}{%
+  \newenvironment{Shaded}%
+    {\begin{mdframed}[style=codestyle]\color{bkcodefg}}%
+    {\end{mdframed}}%
+}{%
+  \renewenvironment{Shaded}%
+    {\begin{mdframed}[style=codestyle]\color{bkcodefg}}%
+    {\end{mdframed}}%
+}
+\makeatother
+
+\newcommand{\passthrough}[1]{\texttt{\color{bkblue!80}\small#1}}
+
+% ── Tablas ────────────────────────────────────────────────────────────────────
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.30}
+
+% ── Listas ────────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize,1]{
+  label=\textcolor{bkgold}{\textbullet},
+  leftmargin=1.4em, itemsep=2pt, parsep=0pt}
+\setlist[itemize,2]{
+  label=\textcolor{bkblue!50}{\textendash},
+  leftmargin=1.4em, itemsep=1pt}
+\setlist[enumerate,1]{leftmargin=1.8em, itemsep=2pt, parsep=0pt}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{2pt}\setlength{\parskip}{0pt}}
+
+% ── Citas en bloque (epígrafes) ───────────────────────────────────────────────
+\mdfdefinestyle{quotestyle}{
+  leftline=true, rightline=false, topline=false, bottomline=false,
+  linewidth=3pt, linecolor=bkgold,
+  backgroundcolor=bkblue!5,
+  innerleftmargin=14pt, innerrightmargin=10pt,
+  innertopmargin=8pt, innerbottommargin=8pt,
+  skipabove=10pt, skipbelow=10pt
+}
+
+\renewenvironment{quote}{%
+  \begin{mdframed}[style=quotestyle]%
+  \itshape\color{bkblue}%
+}{%
+  \end{mdframed}%
+}
+
+% ── Párrafos y tipografía ─────────────────────────────────────────────────────
+\usepackage{parskip}
+\setlength{\parskip}{7pt}
+\setlength{\parindent}{0pt}
+
+\usepackage{setspace}
+\setstretch{1.12}
+
+\usepackage[protrusion=true, expansion=false]{microtype}
+
+% ── Matemáticas ───────────────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ── Figuras y tablas ─────────────────────────────────────────────────────────
+\usepackage{caption}
+\captionsetup{
+  font={small, color=bkgray},
+  labelfont={bf, color=bkblue},
+  labelsep=period}
+\numberwithin{figure}{chapter}
+\numberwithin{table}{chapter}
+
+% ── Viudas y huérfanas ───────────────────────────────────────────────────────
+\widowpenalty=10000
+\clubpenalty=10000
+
+% ── Includes de pandoc ────────────────────────────────────────────────────────
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+% ══════════════════════════════════════════════════════════════════════════════
+
+% ── Portada ───────────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \thispagestyle{empty}
+  \newgeometry{top=0cm, bottom=0cm, left=0cm, right=0cm}
+  \noindent\includegraphics[width=\paperwidth, height=\paperheight]{portada.png}
+  \restoregeometry
+\end{titlepage}
+
+% ── Página de créditos ────────────────────────────────────────────────────────
+\clearpage
+\thispagestyle{empty}
+\mbox{}\vfill
+{
+  \small\color{bkgray}\setstretch{1.4}
+  \noindent{\color{bkblue}\textbf{Trading Algorítmico con Python y MetaTrader 5}}\\
+  \textit{Del dato al robot: estrategias cuantitativas para mercados reales}
+
+  \vspace{10pt}
+  \noindent\textbf{Autor:} Sebastián Ospina Valencia\\
+  \textbf{País:} Bogotá, Colombia
+
+  \vspace{10pt}
+  \noindent{\color{bkgold}\rule{\linewidth}{0.5pt}}
+
+  \vspace{6pt}
+  \noindent\textbf{Descargo de responsabilidad:} El trading con instrumentos
+  financieros implica riesgo de pérdida de capital. Los ejemplos de este libro
+  son exclusivamente educativos y deben probarse en cuentas demo antes de
+  usar dinero real. El autor no se
+  responsabilizan por decisiones de inversión basadas en este material.
+
+  \vspace{10pt}
+  \noindent\copyright\ 2025 Sebastián Ospina Valencia. Uso educativo.
+}
+\clearpage
+
+% ── Tabla de contenidos ───────────────────────────────────────────────────────
+\frontmatter
+\pagestyle{fancy}
+\renewcommand{\contentsname}{\color{bkblue}Contenido}
+\tableofcontents
+\clearpage
+
+% ── Contenido principal ───────────────────────────────────────────────────────
+\mainmatter
+
+\chapter{Prefacio}\label{prefacio}
+
+\begin{quote}
+\emph{``Lo más difícil no es ganar dinero. Lo difícil es conservarlo.''}
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Por qué este libro existe}\label{por-quuxe9-este-libro-existe}
+
+Cuando empecé a enseñar trading algorítmico en la Universidad del
+Rosario, noté algo que se repite en cada cohorte: los estudiantes no
+tienen problema con las ideas. Entienden la lógica de una media móvil,
+intuyen que los precios oscilan alrededor de un valor promedio,
+comprenden que los mercados tienen memoria estadística. El problema no
+es conceptual.
+
+El problema es la brecha entre la idea y el código que la ejecuta a las
+3 de la mañana, sin que nadie la supervise, tomando decisiones con
+dinero real.
+
+Existe abundante literatura en inglés sobre trading cuantitativo: Ernest
+Chan, Stefan Jansen, Ernie Chan, los clásicos de Edward Thorp. Pero en
+español --- el idioma de más de 500 millones de personas, muchas de
+ellas en economías con mercados financieros vibrantes y acceso creciente
+a plataformas de trading --- la brecha es enorme. Este libro intenta
+cerrarla.
+
+No es una traducción. Es un libro construido desde cero sobre el código
+real de un curso que lleva varios años ejecutándose en Bogotá, con
+estudiantes reales que terminaron el programa con un robot funcionando.
+Cada capítulo parte de código que fue escrito, probado, corregido y
+usado en producción.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{A quién va dirigido}\label{a-quiuxe9n-va-dirigido}
+
+Este libro es para ti si:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Tienes conocimientos básicos de finanzas} --- sabes qué es una
+  acción, un par de divisas, un stop loss --- pero nunca has programado
+  una estrategia de trading.
+\item
+  \textbf{Sabes algo de Python} --- o estás dispuesto a aprender lo
+  necesario leyendo el Capítulo 2 antes de continuar.
+\item
+  \textbf{Quieres construir algo real} --- no solo entender la teoría,
+  sino terminar el libro con un robot que pueda conectarse a un bróker y
+  operar.
+\item
+  \textbf{Eres estudiante, analista, trader o curioso} que quiere
+  entender cómo funcionan los sistemas cuantitativos que mueven buena
+  parte del volumen de los mercados modernos.
+\end{itemize}
+
+No necesitas ser matemático ni físico. Renaissance Technologies sí los
+contrata; este libro no los requiere. Necesitas disciplina, curiosidad y
+disposición a escribir código aunque al principio no funcione.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Qué NO es este libro}\label{quuxe9-no-es-este-libro}
+
+Antes de continuar, tres aclaraciones importantes:
+
+\textbf{No es un libro para hacerse rico.} El objetivo no es darte una
+estrategia rentable lista para usar. Ningún libro honesto puede hacer
+eso. El objetivo es darte las herramientas para que \emph{tú}
+construyas, pruebas y evalúes tus propias estrategias con rigor
+estadístico.
+
+\textbf{No es un curso de Python.} Python es el medio, no el fin. El
+Capítulo 2 cubre exactamente lo que necesitas saber del lenguaje para
+entender el resto del libro. Para una formación completa en Python
+recomendamos \emph{Python Crash Course} de Eric Matthes.
+
+\textbf{No es un libro chartista.} No encontrarás análisis de patrones
+de velas, cabeza y hombros, ni niveles de Fibonacci como herramientas
+principales. El enfoque es cuantitativo: estadística, matemáticas y
+código. Los indicadores técnicos aparecen, pero siempre con una
+justificación estadística detrás.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Advertencia de riesgo}\label{advertencia-de-riesgo}
+
+\begin{quote}
+El mercado de capitales es una de las formas más riesgosas de hacer
+dinero. El trading automatizado lo es aún más: un robot mal configurado
+puede ejecutar cientos de operaciones en minutos antes de que tengas
+tiempo de detenerlo.
+
+Todos los ejemplos de este libro son \textbf{educativos y explicativos}.
+Ninguna estrategia presentada aquí constituye asesoría financiera ni
+garantiza rentabilidad. Toda operación que realices con dinero real es
+\textbf{responsabilidad exclusivamente tuya}.
+
+Si decides operar con capital real, empieza siempre en una cuenta demo.
+Entiende cada línea de código antes de ejecutarla en producción.
+Gestiona tu riesgo antes de pensar en rentabilidad.
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Cómo está organizado el
+libro}\label{cuxf3mo-estuxe1-organizado-el-libro}
+
+El libro sigue la misma arquitectura de un sistema de trading real, de
+adentro hacia afuera:
+
+\begin{verbatim}
+PARTE I   — Fundamentos          (Capítulos 1–3)
+PARTE II  — Operaciones Básicas  (Capítulos 4–5)
+PARTE III — Arbitraje Estadístico (Capítulos 6–10)
+PARTE IV  — Backtesting          (Capítulos 11–12)
+PARTE V   — Productivización     (Capítulos 13–15)
+\end{verbatim}
+
+\textbf{Parte I} establece el paradigma conceptual, las herramientas de
+Python necesarias y la infraestructura de conexión con MetaTrader 5.
+
+\textbf{Parte II} construye los primeros robots operativos: el sistema
+de Pivot Points y el sistema Martingala. Son simples, pero completos ---
+tienen lógica de entrada, gestión de la operación y cierre.
+
+\textbf{Parte III} introduce el arbitraje estadístico: detección de
+anomalías, Bandas de Bollinger, Pairs Trading y el Robot de Regresión
+Lineal. Aquí el análisis se vuelve cuantitativo en serio.
+
+\textbf{Parte IV} cubre el backtesting: cómo evaluar una estrategia
+sobre datos históricos antes de arriesgar capital real, y cómo evitar
+los errores más comunes (overfitting, look-ahead bias).
+
+\textbf{Parte V} cierra el ciclo con productivización: cómo convertir un
+script en un sistema que corre de forma autónoma, con gestión de riesgo
+basada en el Criterio de Kelly y capacidad de desplegarse desde GitHub.
+
+Cada capítulo termina con el código completo comentado. Puedes seguir el
+libro de principio a fin, o saltar a la parte que más te interese si ya
+tienes experiencia en alguna de las áreas.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Las herramientas}\label{las-herramientas}
+
+A lo largo del libro usaremos:
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Herramienta & Propósito \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Python 3.9+} & Lenguaje principal \\
+\textbf{MetaTrader 5} & Plataforma de bróker y fuente de datos \\
+\textbf{pandas} & Manipulación de datos de precios \\
+\textbf{numpy} & Cálculos numéricos \\
+\textbf{scikit-learn} & Modelos de regresión (Parte III) \\
+\textbf{ta} & Indicadores técnicos \\
+\textbf{GitHub} & Control de versiones y despliegue del robot \\
+\end{longtable}
+
+Todas son gratuitas. Las instrucciones de instalación están en el
+Capítulo 3.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Una nota personal}\label{una-nota-personal}
+
+Este curso nació de una pregunta simple que varios estudiantes me
+hicieron en distintos momentos: \emph{``¿Hay algo así pero en
+español?''}
+
+La respuesta honesta era no. Este libro es el intento de cambiar eso.
+Está construido sobre años de iteración en el aula, errores de
+producción reales, robots que funcionaron y muchos que no, y la
+convicción de que el acceso al conocimiento cuantitativo no debería
+depender del idioma en que nació.
+
+Espero que al terminar este libro tengas, al menos, un robot
+funcionando. Y la claridad de saber exactamente qué está haciendo y por
+qué.
+
+\emph{Sebastián Ospina Valencia} \emph{MSc Economía, Universidad de
+Antioquia} \emph{Bogotá, Colombia}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\emph{Siguiente: \href{capitulo_01_paradigma_cuantitativo.md}{Capítulo 1
+--- El Paradigma Cuantitativo}}
+
+\chapter{Capítulo 1: El Paradigma
+Cuantitativo}\label{capuxedtulo-1-el-paradigma-cuantitativo}
+
+\begin{quote}
+\emph{``Los mercados no son eficientes. Son simplemente difíciles de
+predecir.''} --- Jim Simons
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{1.1 Una historia sobre matemáticos y
+dinero}\label{una-historia-sobre-matemuxe1ticos-y-dinero}
+
+En 1967, un matemático llamado Edward Thorp publicó \emph{Beat the
+Market}, un libro en el que demostraba que era posible valorar
+sistemáticamente warrants sobre acciones usando ecuaciones
+diferenciales. No era análisis chartista ni intuición: era matemática
+aplicada a los precios. Thorp no solo escribió el libro --- operó la
+estrategia y ganó dinero real.
+
+Dos décadas después, Fischer Black y Myron Scholes formalizaron esa
+misma idea en la ecuación que llevaría sus nombres: un modelo matemático
+para valorar opciones financieras. En 1997 ganaron el Premio Nobel de
+Economía. Los mercados financieros habían entrado definitivamente en la
+era cuantitativa.
+
+Pero fue Jim Simons quien llevó esto al extremo. Simons era matemático
+del MIT, especialista en geometría diferencial, y en 1988 fundó
+Renaissance Technologies con un objetivo radical: operar los mercados
+\textbf{exclusivamente} con modelos matemáticos y estadísticos, sin
+ninguna intervención de analistas financieros tradicionales. Su fondo
+Medallion generó retornos anualizados superiores al 60\% durante más de
+tres décadas --- el mejor desempeño sostenido en la historia de los
+mercados financieros.
+
+La historia de Simons y sus colegas está narrada magistralmente en
+\emph{The Man Who Solved the Market} de Gregory Zuckerman, y la historia
+más amplia del fenómeno quant está en \emph{The Quants} de Scott
+Patterson. Ambos libros aparecen en la bibliografía de este libro no
+como referencia técnica, sino como contexto: para entender de dónde
+vienen las ideas que vamos a implementar en código.
+
+Lo que Simons demostró --- y lo que este libro busca transmitir --- es
+que los mercados tienen estructura estadística explotable. No siempre.
+No fácilmente. No sin riesgo. Pero sí de forma sistemática, con las
+herramientas adecuadas.
+
+Hoy esas herramientas están disponibles para cualquier persona con una
+laptop, conexión a internet y disposición para aprender. Eso es, en
+esencia, lo que hace posible este libro.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{1.2 ¿Qué es el Trading
+Algorítmico?}\label{quuxe9-es-el-trading-algoruxedtmico}
+
+\begin{quote}
+\emph{Son instrumentos financieros con base en un algoritmo que permite
+realizar operaciones financieras de manera automática. Su objetivo
+principal es generar Alpha.}
+\end{quote}
+
+Esta definición, directa y precisa, captura los dos elementos
+esenciales:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Un algoritmo} --- un conjunto de reglas explícitas,
+  reproducibles y basadas en datos que determinan cuándo comprar, cuándo
+  vender y cuánto arriesgar.
+\item
+  \textbf{Automatización} --- las decisiones se ejecutan sin
+  intervención humana en el momento de la operación.
+\end{enumerate}
+
+La palabra clave es \emph{Alpha}.
+
+\subsection{1.2.1 Alpha vs.~Buy and Hold}\label{alpha-vs.-buy-and-hold}
+
+En finanzas, \textbf{Alpha} es el rendimiento que una estrategia genera
+de forma \emph{independiente del mercado}. Para entenderlo, compáralo
+con su opuesto:
+
+\textbf{Buy and Hold} (\emph{comprar y mantener}) es la estrategia más
+simple: compras un activo --- digamos el S\&P 500 o Bitcoin --- y lo
+mantienes durante años, capturando el crecimiento general del mercado.
+Si el mercado sube 10\%, tú subes 10\%. Si cae 40\%, tú caes 40\%. No
+hay habilidad activa involucrada; es exposición pura al \textbf{Beta}
+del mercado.
+
+\textbf{Alpha} es el rendimiento que va \emph{más allá} del mercado. Si
+el mercado sube 10\% y tu estrategia sube 18\%, el Alpha es ese 8\%
+adicional. Más importante aún: si el mercado cae 30\% y tu estrategia
+cae solo 5\%, o incluso genera retornos positivos --- eso es Alpha
+genuino. Es rendimiento independiente de la dirección del mercado.
+
+\emph{{[} Diagrama --- disponible en la versión digital {]}}
+
+\textbf{Figura 1.1 --- Alpha vs Beta.} El trading algorítmico busca
+retornos independientes de la dirección del mercado, no simplemente
+seguirlo.
+
+\begin{quote}
+\textbf{Nota importante:} Generar Alpha consistente es
+extraordinariamente difícil. La mayoría de los hedge funds no logran
+superar consistentemente a sus benchmarks de largo plazo. Este libro no
+promete una fórmula para lograrlo --- promete las herramientas para
+\emph{buscarlo} con rigor y honestidad estadística.
+\end{quote}
+
+\subsection{1.2.2 Automatización no significa ausencia
+humana}\label{automatizaciuxf3n-no-significa-ausencia-humana}
+
+Un malentendido frecuente: que un robot de trading opera ``solo'' y no
+requiere atención. La realidad es diferente:
+
+\begin{itemize}
+\tightlist
+\item
+  El robot ejecuta las \emph{decisiones operativas} de forma autónoma
+  (comprar, vender, ajustar stops).
+\item
+  El ser humano se encarga del \emph{desarrollo, monitoreo y
+  mantenimiento} del sistema.
+\end{itemize}
+
+Un robot mal diseñado puede ejecutar cientos de operaciones erróneas en
+minutos. Un robot bien diseñado igual requiere supervisión periódica:
+los mercados cambian, las condiciones estadísticas evolucionan, y ningún
+modelo es válido para siempre.
+
+\textbf{El trading algorítmico requiere una inversión seria en
+desarrollo y monitoreo continuo.} Quien lo entiende como una caja negra
+que genera dinero mientras duermes está en el camino equivocado.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{1.3 Ventajas y Desventajas}\label{ventajas-y-desventajas}
+
+\subsection{1.3.1 Ventajas}\label{ventajas}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Ventaja
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Descripción
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Reducción de errores humanos} & El robot no se equivoca al
+calcular un precio, no olvida colocar el stop loss, no ingresa un
+volumen incorrecto por error de tipeo. \\
+\textbf{Menor desgaste emocional} & El miedo y la codicia son los peores
+consejeros en trading. Un algoritmo no tiene emociones: ejecuta las
+reglas sin importar si el mercado está cayendo en pánico o eufórico al
+alza. \\
+\textbf{Señales claras y precisas} & Una estrategia algorítmica define
+exactamente cuándo entrar: no ``cuando se vea fuerte'', sino ``cuando el
+precio supere la media de 20 períodos por más de 1.5 desviaciones
+estándar''. \\
+\textbf{Metodología reproducible} & El proceso de diseño, prueba y
+evaluación de estrategias cuantitativas es sistemático. Puedes
+repetirlo, mejorarlo y comunicarlo a otros. \\
+\textbf{Escalabilidad} & El mismo robot puede operar 1 símbolo o 50 con
+el mismo esfuerzo. Un trader humano tiene límites físicos de atención;
+el código no. \\
+\end{longtable}
+
+\subsection{1.3.2 Desventajas}\label{desventajas}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Desventaja
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Descripción
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Alto costo de desarrollo en tiempo} & Diseñar, programar, probar
+y depurar un robot robusto requiere semanas o meses de trabajo. No hay
+atajos. \\
+\textbf{Monitoreo continuo} & Un robot que corre 24/7 necesita
+supervisión: conexiones caídas, errores de ejecución, cambios en las
+condiciones del bróker. \\
+\textbf{Riesgo de producción} & Una mala salida a producción puede
+generar pérdidas grandes y rápidas antes de que puedas intervenir. La
+Parte V de este libro dedica un capítulo entero a mitigar este
+riesgo. \\
+\textbf{Costos de despliegue} & Servidores, conexiones VPS, cuentas de
+bróker, licencias de datos --- todo tiene un costo que hay que
+considerar en la ecuación de rentabilidad. \\
+\textbf{Habilidades especializadas} & Requiere estadística, programación
+y conocimiento de mercados. La intersección de estas tres áreas no es
+trivial de alcanzar. \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{1.4 Los Tres Tipos de
+Estrategias}\label{los-tres-tipos-de-estrategias}
+
+Desde el punto de vista cuantitativo, cualquier estrategia de trading
+puede clasificarse en una de tres familias. Esta taxonomía es
+fundamental porque determina la lógica estadística del sistema, las
+condiciones de mercado en que funciona y los indicadores apropiados para
+construirla.
+
+\emph{{[} Diagrama --- disponible en la versión digital {]}}
+
+\textbf{Figura 1.2 --- Taxonomía de estrategias cuantitativas.} Las tres
+familias no son mutuamente excluyentes; muchas estrategias reales
+combinan elementos de más de una.
+
+\subsection{1.4.1 Estrategias de Momentum (o Trend
+Following)}\label{estrategias-de-momentum-o-trend-following}
+
+\textbf{Premisa:} Lo que está sucediendo en el mercado \emph{continuará
+sucediendo} en el corto plazo.
+
+Si el precio ha estado subiendo, la estrategia asume que seguirá
+subiendo y compra. Si ha estado bajando, vende. Es la apuesta por la
+persistencia de la tendencia.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Momento Absoluto:} ¿El precio de hoy es mayor que el de hace N
+  períodos? Compra si sí, vende si no.
+\item
+  \textbf{Price Breakthrough:} El precio rompe un nivel de resistencia
+  significativo --- señal de que la tendencia se está acelerando.
+\item
+  \textbf{Rate of Change (ROC):} Mide la velocidad del cambio de precio.
+  Un ROC alto indica momentum fuerte.
+\end{itemize}
+
+\begin{quote}
+\textbf{En qué condiciones funciona:} Mercados que están en tendencia
+clara (trending markets). Falla en mercados laterales o que oscilan sin
+dirección definida.
+\end{quote}
+
+\subsection{1.4.2 Estrategias de Mean Reversion (Reversión a la
+Media)}\label{estrategias-de-mean-reversion-reversiuxf3n-a-la-media}
+
+\textbf{Premisa:} Los precios oscilan alrededor de un valor promedio y,
+cuando se alejan demasiado, tienden a volver.
+
+Esta familia tiene dos preguntas fundacionales que determinan la calidad
+de la estrategia: - \emph{¿A cuál media?} --- una media móvil simple,
+exponencial, el precio fundamental, el valor justo estadístico. -
+\emph{¿Cuándo la diferencia es estadísticamente significativa?} --- no
+toda desviación del promedio es una oportunidad; hay que distinguir
+ruido de señal.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Martingalas:} Duplican el tamaño de la posición después de
+  cada pérdida, apostando a que el precio revertirá. Son matemáticamente
+  peligrosas sin gestión de riesgo adecuada (Capítulo 5).
+\item
+  \textbf{Spreads deviation:} El spread entre dos activos
+  correlacionados se aleja de su promedio histórico --- señal de
+  reversión en el Pairs Trading (Capítulo 9).
+\item
+  \textbf{Detección de Anomalías:} Cuando el precio se desvía de su
+  modelo estadístico de referencia por encima de un umbral --- la base
+  del Robot de Regresión (Capítulo 10).
+\item
+  \textbf{Bandas de Bollinger:} Precio por debajo de la banda inferior →
+  compra; precio por encima de la banda superior → venta (Capítulo 8).
+\end{itemize}
+
+\begin{quote}
+\textbf{En qué condiciones funciona:} Mercados laterales o con reversión
+estadística comprobada. Falla en mercados con tendencias prolongadas.
+\end{quote}
+
+\subsection{1.4.3 Estrategias
+Predictivas}\label{estrategias-predictivas}
+
+\textbf{Premisa:} Un modelo estadístico o matemático puede estimar los
+niveles futuros del precio con suficiente precisión para generar señales
+rentables.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Regresión Lineal:} Ajustar una línea al precio histórico
+  reciente y operar las desviaciones del precio actual respecto a ese
+  modelo (el Robot REG del Capítulo 10).
+\item
+  \textbf{Machine Learning:} Modelos como Random Forest o Gradient
+  Boosting entrenados sobre features de mercado para predecir la
+  dirección del siguiente período.
+\item
+  \textbf{Modelos ARIMA:} Modelos estadísticos de series de tiempo que
+  capturan autocorrelación en los retornos.
+\end{itemize}
+
+\begin{quote}
+\textbf{En qué condiciones funciona:} Requieren periodos de
+reentrenamiento frecuente. Son susceptibles al overfitting --- el
+enemigo número uno de las estrategias predictivas (Capítulo 12).
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{1.5 La Arquitectura Básica de un Sistema de
+Trading}\label{la-arquitectura-buxe1sica-de-un-sistema-de-trading}
+
+Antes de escribir una línea de código, es útil entender las siete capas
+que componen cualquier sistema de trading algorítmico. Este libro las
+recorre en orden:
+
+\emph{{[} Diagrama --- disponible en la versión digital {]}}
+
+\textbf{Figura 1.3 --- Las siete capas de un sistema de trading
+algorítmico.}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Capa
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Descripción
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Capítulos de este libro
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Infraestructura} & Hardware, software, plataforma del bróker &
+Cap. 3 \\
+\textbf{Conexión a datos} & Autenticación con MT5, gestión de
+credenciales & Cap. 3 \\
+\textbf{Obtención de datos} & Extracción de velas OHLCV, ticks,
+posiciones abiertas & Cap. 3 \\
+\textbf{Código de estrategia} & La lógica: calcular señales, determinar
+entradas y salidas & Caps. 4--10 \\
+\textbf{Backtesting} & Probar la estrategia sobre datos históricos &
+Caps. 11--12 \\
+\textbf{Código de trading} & Enviar órdenes, gestionar posiciones,
+calcular riesgo & Caps. 4--10 \\
+\textbf{Productivización} & Automatizar la ejecución, logs, monitoreo,
+despliegue & Caps. 13--15 \\
+\end{longtable}
+
+Un error frecuente de los principiantes es saltar directamente a la capa
+4 (la estrategia) sin haber construido las capas anteriores. El
+resultado es código que ``funciona en mi máquina'' pero falla en
+producción porque no maneja errores de conexión, no tiene logs, o no
+puede recuperarse de una caída del servidor.
+
+Este libro respeta ese orden.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{1.6 El Arbitraje Estadístico: la columna vertebral del
+libro}\label{el-arbitraje-estaduxedstico-la-columna-vertebral-del-libro}
+
+La Parte III de este libro está dedicada al \textbf{Arbitraje
+Estadístico} --- la familia de estrategias que fundamenta la mayoría del
+código del repositorio.
+
+\begin{quote}
+\emph{``Explotar las características estadísticas del activo o los
+activos con el fin de generar rentabilidades.''}
+\end{quote}
+
+A diferencia del arbitraje clásico (que busca diferencias de precio del
+mismo activo en dos mercados distintos), el arbitraje estadístico no
+requiere precios idénticos. Requiere que haya una \textbf{relación
+estadística estable} entre variables de mercado --- una relación que el
+modelo puede identificar, cuantificar y explotar cuando se desvía
+temporalmente.
+
+Los ejemplos concretos que construiremos:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Detección de Anomalías:} Cuando el precio se desvía
+  significativamente de su modelo de regresión lineal reciente.
+\item
+  \textbf{Bandas de Bollinger:} Cuando el precio cruza los límites
+  estadísticos de desviación estándar.
+\item
+  \textbf{Pairs Trading:} Cuando el spread entre dos activos
+  cointegrados se aleja de su media histórica.
+\item
+  \textbf{Robot REG:} Un modelo de regresión que predice el precio
+  ``justo'' y opera las desviaciones.
+\end{itemize}
+
+En todos los casos, la pregunta central es la misma: \emph{¿cuándo la
+diferencia entre el precio actual y su valor estadístico de referencia
+es lo suficientemente grande y persistente como para justificar una
+operación?}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{1.7 Resumen del Capítulo}\label{resumen-del-capuxedtulo}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Concepto
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Definición
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Trading Algorítmico} & Sistema de reglas explícitas basadas en
+datos que ejecuta operaciones financieras automáticamente \\
+\textbf{Alpha} & Rendimiento generado independientemente del movimiento
+general del mercado \\
+\textbf{Beta} & Exposición al movimiento general del mercado (Buy and
+Hold) \\
+\textbf{Momentum} & Estrategia que apuesta por la persistencia de la
+tendencia actual \\
+\textbf{Mean Reversion} & Estrategia que apuesta por el retorno del
+precio a su valor promedio \\
+\textbf{Predictiva} & Estrategia que usa modelos estadísticos para
+estimar niveles futuros \\
+\textbf{Arbitraje Estadístico} & Explotar relaciones estadísticas
+estables entre variables de mercado \\
+\textbf{Overfitting} & Ajustar demasiado el modelo a datos históricos,
+perdiendo capacidad predictiva real \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{1.8 Lecturas Recomendadas}\label{lecturas-recomendadas}
+
+Para profundizar en el contexto histórico y conceptual del trading
+cuantitativo:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Beat the Market} --- Edward O. Thorp \& Sheen T. Kassouf
+  (1967). El libro que dio inicio al trading sistemático moderno.
+\item
+  \textbf{The Quants} --- Scott Patterson (2010). La historia de cómo
+  los matemáticos conquistaron Wall Street.
+\item
+  \textbf{The Man Who Solved the Market} --- Gregory Zuckerman (2019).
+  La biografía no autorizada de Jim Simons y Renaissance Technologies.
+\item
+  \textbf{Algorithmic Trading: Winning Strategies and Their Rationale}
+  --- Ernest P. Chan (2013). La referencia técnica más práctica
+  disponible en inglés.
+\item
+  \textbf{Machine Learning for Algorithmic Trading} --- Stefan Jansen
+  (2020). El estado del arte en estrategias basadas en machine learning.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\emph{En el siguiente capítulo introduciremos Python --- el lenguaje que
+usaremos para implementar todo lo que se describió aquí.}
+
+\emph{Siguiente: \href{capitulo_02_introduccion_python.md}{Capítulo 2
+--- Introducción a Python para Trading Algorítmico}}
+
+\end{document}
