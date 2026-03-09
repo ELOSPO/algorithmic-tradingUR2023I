@@ -23,6 +23,11 @@ Currently working on developing quantitative trading strategies using Python and
 ## algorithmic-tradingUR2023I
 Este repositorio contiene las funciones básicas del curso de Trading Algorítmico con Python y MT5 dictado en la Universidad del Rosario así como los robots desarrollados durante el curso
 
+## Update 1.2.0 09/03/2026
+
+Se incorporaron dos clases: Easy_Trading_IB.py y Easy_Trading_NT.py que sirven para realizar las conexiones a los brokers de Interactive Brokers y Ninja Trader
+
+
 ## Update 1.1.4 15/07/2025
 
 The following methods were updated:
