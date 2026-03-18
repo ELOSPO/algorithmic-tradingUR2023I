@@ -4,10 +4,11 @@ import datetime
 
 # Clase Septiembre 6 del 2023
 
-nombre = 67043467
-clave = 'Genttly.2022'
+nombre = 67106046
+clave = 'Sebas.123'
 servidor = 'RoboForex-ECN'
 path = r'C:\Program Files\RoboForex - MetaTrader 5\terminal64.exe'
+
 
 # realizar conexión con MT5
 mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
@@ -16,7 +17,7 @@ mt5.initialize(login = nombre, password = clave, server = servidor, path = path)
 orden = {
             "action" : mt5.TRADE_ACTION_DEAL,
             "type": mt5.ORDER_TYPE_BUY,
-            "symbol":"BTCUSD",
+            "symbol":"EURUSD",
             "volume":0.05,
             "type_filling": mt5.ORDER_FILLING_IOC
         }
@@ -27,13 +28,15 @@ mt5.order_send(orden)
 orden = {
             "action" : mt5.TRADE_ACTION_DEAL,
             "type": mt5.ORDER_TYPE_BUY,
-            "symbol":"BTCUSD",
+            "symbol":"EURUSD",
             "volume":0.05,
             "type_filling": mt5.ORDER_FILLING_IOC,
             "sl": 25689.01, 
             "tp": 25929.08,
             "comment": "primera_operación"
         }
+
+
 
 mt5.order_send(orden)
 
