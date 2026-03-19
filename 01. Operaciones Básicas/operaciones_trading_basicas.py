@@ -566,3 +566,15 @@ if datetime.datetime.now().hour == 19:
     ops_abiertas = mt5.positions_get()
     df_positions = pd.DataFrame(list(ops_abiertas), columns = ops_abiertas[0]._asdict().keys())
     close_all_trades(df_positions)
+
+
+# Abrir Operaciones en cada activo de la lista especificada
+lista_activos = ['GBPUSD','USDJPY','XAUUSD','USDCAD','AUDJPY']
+
+for par in lista_activos:
+    orden_param = {'action':mt5.TRADE_ACTION_DEAL,
+         'type': mt5.ORDER_TYPE_BUY,
+         'symbol':par,
+         'volume':0.05,
+         'comment':'SOV'}
+    mt5.order_send(orden_param)
