@@ -88,11 +88,14 @@ class Basic_funcs():
         )
 
         tabla = util.df(bars)
-        if not tabla.empty:
-            tabla = tabla.rename(columns={'date': 'time', 'open': 'open', 'high': 'high',
-                                          'low': 'low', 'close': 'close', 'volume': 'tick_volume'})
-            tabla['time'] = pd.to_datetime(tabla['time'])
-            tabla = tabla.tail(cantidad).reset_index(drop=True)
+        if tabla is None or tabla.empty:
+            print(f"No se obtuvieron datos para {par} con timeframe {periodo}")
+            return pd.DataFrame()
+
+        tabla = tabla.rename(columns={'date': 'time', 'open': 'open', 'high': 'high',
+                                      'low': 'low', 'close': 'close', 'volume': 'tick_volume'})
+        tabla['time'] = pd.to_datetime(tabla['time'])
+        tabla = tabla.tail(cantidad).reset_index(drop=True)
 
         return tabla
 
