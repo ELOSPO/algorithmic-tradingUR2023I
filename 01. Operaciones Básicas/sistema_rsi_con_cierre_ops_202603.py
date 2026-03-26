@@ -18,6 +18,32 @@ def extraer_datos(symbol,timeframe):
 
     return tabla
 
+def close_all_trades(df):
+    list_tickets = df['ticket'].unique().tolist()
+
+    for ticket in list_tickets:
+        print(ticket)
+        df_trade = df[df['ticket'] == ticket]
+        tipo_op =df_trade['type'].iloc[-1]
+        symbol_op = df_trade['symbol'].iloc[-1]
+        vol_op = df_trade['volume'].iloc[-1]
+
+        if tipo_op == 0:
+            op_cierre = mt5.ORDER_TYPE_SELL
+        else:
+            op_cierre = mt5.ORDER_TYPE_BUY
+
+        close_order = {'action': mt5.TRADE_ACTION_DEAL,
+                       'type': op_cierre,
+                       'position':ticket,
+                       'volume':vol_op,
+                       'symbol':symbol_op,
+                       'comment': 'Cerrar'
+                       ,'type_filling':mt5.ORDER_FILLING_FOK
+                       }
+
+        mt5.order_send(close_order)
+
 def robot_rsi(symbol,timeframe,volume,pips_sl,pips_tp):
 
     # Condicones de Entrada
@@ -72,6 +98,21 @@ def robot_rsi(symbol,timeframe,volume,pips_sl,pips_tp):
 
     #Gestión de posiciones
 
+    try:
+        ops_abiertas = mt5.positions_get()
+        df_positions = pd.DataFrame(list(ops_abiertas), columns = ops_abiertas[0]._asdict().keys())
+        num_ops = len(df_positions)
+    except:
+        num_ops = 0
+
+    if num_ops > 0:
+        suma_profit = df_positions['profit'].sum()
+
+        if suma_profit > 100:
+            close_all_trades(df_positions)
+
+
+
 # Obtener la tupla total de symbols
 symbols_tot = mt5.symbols_get()
 # Construimos una tabla a utilzando como insumos las tuplas que obtivos en la lpínea anterior
@@ -85,22 +126,3 @@ while True:
         except:
             print(f'Para el activo {activo} no se logró ejecutar la estrategia')
     time.sleep(60*60)
-
-tick = mt5.symbol_info('EURUSD').point
-pip_symbol = tick*10
-
-p_actual = 1.13871
-
-p_3pips_mas = p_actual + 3*pip_symbol
-
-#Precio Ask: Precio de oferta. precio mínimo al que un vendedor está dispuesto
-# a vender
-
-# precio bid de demanda. Es el precio máximo que un comprador está dispuesto
-#  a dar por un activo
-
-# La diferencia entre el bid y el ask es el spread
-
-ask_eur_usd = mt5.symbol_info('EURUSD').ask
-bid_eur_usd = mt5.symbol_info('EURUSD').bid
-spread = ask_eur_usd - bid_eur_usd
