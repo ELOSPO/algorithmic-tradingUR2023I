@@ -18,6 +18,8 @@ nombre_comleto = var_texto + var_texto2
 
 print('Esta es una llamada de print')
 
+###################### Listas ##############
+
 lista1 = [var_entera,var_bool,6.54]
 print(lista1)
 
@@ -33,6 +35,31 @@ lista1[2] = 10.82
 
 lista1.append(var_texto2)
 print(lista1)
+
+pares_fx = ['EURUSD','GBPUSD','BTCUSD','XAUUSD']
+pares_fx[3] = 'XAGUSD'
+
+print(pares_fx)
+pares_fx.append('AUDCAD')
+
+print(pares_fx)
+
+pares_fx.insert(3,'USDJPY')
+
+lista_fx_1 = ['EURUSD', 'GBPUSD', 'BTCUSD',['SPY500','NASDAQ','COLCAP'], 'USDJPY', 'XAGUSD', 'AUDCAD']
+
+print(lista_fx_1[3])
+print(lista_fx_1[3][1])
+print(lista_fx_1[3][2])
+
+lista_pares_1 = ['EURUSD', 'GBPUSD', 'BTCUSD'] 
+lista_pares_2 = ['XAGUSD', 'AUDCAD']
+lista_pares_1.extend(lista_pares_2)
+
+lista_pares_3 = lista_pares_1 + lista_pares_2
+
+
+
 ###################### Tuplas ##############
 
 mi_segunda_lista = ['Sebastián', 34, False, [1, 'Hola', True]]
@@ -40,6 +67,15 @@ mi_tupla1 = (1,mi_segunda_lista,True)
 print(mi_tupla1)
 mi_tupla1[1][1] = 33
 print(mi_tupla1)
+
+tupla_fx = ('EURUSD', 'GBPUSD', 'BTCUSD')
+print(tupla_fx[1])
+
+tupla_fx_2 = ('EURUSD', ['XAGUSD', 'AUDCAD'],'GBPUSD', 'BTCUSD')
+
+tupla_fx_2[1][0] = 'WTI'
+
+print(tupla_fx_2)
 
 ###################### Diccionarios ##############
 
@@ -62,6 +98,17 @@ print(mis_datos)
 
 mis_datos.keys()
 mis_datos.values()
+
+dict_fx = {'EURUSD':1.1711,'GBPUSD':1.3520,'BTCUSD':78330}
+dict_fx['EURUSD']
+dict_fx['GBPUSD']
+dict_fx.update({'AUDCAD':0.9785})
+
+print(dict_fx)
+dict_fx.keys()
+dict_fx.values()
+
+dict_fx.update({'indices':['COLCAP','NASDAQ','SP500']})
 
 ###################### Dataframes ##############
 
