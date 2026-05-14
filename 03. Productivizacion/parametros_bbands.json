@@ -1,0 +1,32 @@
+{
+    "EURUSD": {"symbol":"EURUSD",
+               "lot_size": 0.01,
+               "timeframe": 5,
+               "max_trades": 3,
+               "length_bb":14,
+               "lower_std":2,
+               "upper_std":2,
+               "pips_tp":30,
+               "pips_sl":10
+              },
+    "GBPUSD": {"symbol":"GBPUSD",
+               "lot_size": 0.03,
+               "timeframe": 15,
+               "max_trades": 2,
+               "length_bb":16,
+               "lower_std":1.5,
+               "upper_std":1.5,
+               "pips_tp":40,
+               "pips_sl":15
+              },
+    "XAUUSD": {"symbol":"XAUUSD",
+               "lot_size": 0.03,
+               "timeframe": 5,
+               "max_trades": 2,
+               "length_bb":10,
+               "lower_std":1,
+               "upper_std":1,
+               "pips_tp":50,
+               "pips_sl":20
+              }
+}
