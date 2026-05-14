@@ -671,6 +671,15 @@ class Basic_funcs():
         total_trades = len(df_est_symbol)
 
         return df_est_symbol, win_trades, total_trades
+    
+    def traer_forex(self):
+        symbols_to = mt5.symbols_get()
+        symbols_df = pd.DataFrame(list(symbols_to),columns = symbols_to[0]._asdict().keys())
+        symbols_forex = symbols_df.copy()
+        symbols_forex = symbols_forex[symbols_forex['path'].str.contains('Forex')]
+        self.list_forex = symbols_forex['name'].tolist()
+
+        return self.list_forex
 
     # def _efficient_close_trades(self,symbol,comment = None):
         
