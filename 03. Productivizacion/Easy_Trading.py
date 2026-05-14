@@ -281,6 +281,8 @@ class Basic_funcs():
         '''
         Función para obtener las posiciones abiertas para cada uno de los pares
         en cada timeframe
+
+        Retorna numero de posiciones, dataframe con posiciones
         
         '''
          
