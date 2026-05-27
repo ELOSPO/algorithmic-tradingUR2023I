@@ -1,0 +1,12 @@
+[BUG]: no found input "dist_full"
+
+## Command Line
+C:\Users\Admin\AppData\Local\Programs\Python\Python39\Scripts\pyarmor gen . dist_full
+
+## Environments
+Python 3.9.8
+Pyarmor 9.1.7 (trial), 000000, non-profits
+Platform windows.x86_64
+Native windows.amd64
+Home C:\Users\Admin\.pyarmor
+
