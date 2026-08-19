@@ -83,3 +83,79 @@ for i in range(10):
                    'tp':take_profit}
 
     mt5.order_send(mi_tercer_trade)
+
+for i in range(10):
+    precio_actual = mt5.symbol_info_tick('EURUSD').ask
+    take_profit = precio_actual - 0.003
+    stop_loss = precio_actual + 0.003
+    mi_tercer_trade = {'action':mt5.TRADE_ACTION_DEAL,
+                   'type':mt5.ORDER_TYPE_SELL,
+                   'symbol':'EURUSD',
+                   'volume':0.01,
+                   'comment':'SOV',
+                   'sl': stop_loss,
+                   'tp':take_profit}
+
+    mt5.order_send(mi_tercer_trade)
+
+ops_abiertas = mt5.positions_get()
+df_positions = pd.DataFrame(list(ops_abiertas), columns = ops_abiertas[0]._asdict().keys())
+
+close_dict = {'action': mt5.TRADE_ACTION_DEAL,
+              'symbol':'EURUSD',
+              'volume':0.01,
+              'type':mt5.ORDER_TYPE_SELL,
+              'position': 732179510}
+mt5.order_send(close_dict)
+
+sebas_df = df_positions.copy()
+sebas_df = sebas_df[sebas_df['comment'] == 'SOV']
+
+lista_tickets = sebas_df['ticket'].tolist()
+
+for trade in lista_tickets:
+    df_temp = sebas_df.copy()
+    df_temp = df_temp[df_temp['ticket'] == trade]
+    simbolo = df_temp['symbol'].iloc[-1]
+    volume_open = df_temp['volume'].iloc[-1]
+    tipo = df_temp['type'].iloc[-1]
+
+
+    if tipo == 0:
+        tipo_for_close = mt5.ORDER_TYPE_SELL
+    else:
+        tipo_for_close = mt5.ORDER_TYPE_BUY
+
+    close_dict = {'action': mt5.TRADE_ACTION_DEAL,
+                  'symbol':simbolo,
+                  'volume': volume_open,
+                  'type':tipo_for_close,
+                  'position': trade}
+    mt5.order_send(close_dict)
+
+pendiente = {
+                "action": mt5.TRADE_ACTION_PENDING,
+                "type": mt5.ORDER_TYPE_BUY_LIMIT,
+                "price": mt5.symbol_info_tick('EURUSD').ask - 0.0007,
+                "symbol": "EURUSD",
+                "volume": 0.05,
+                "type_filling": mt5.ORDER_FILLING_IOC
+
+            }
+
+mt5.order_send(pendiente)
+
+pending_orders = mt5.orders_get()
+
+try:
+    df_pending_orders = pd.DataFrame(list(pending_orders), columns = pending_orders[0]._asdict().keys())
+    lista_tickets_pendiente = df_pending_orders['ticket'].tolist()
+
+    for orden in lista_tickets_pendiente:
+        remove_pending = {'order':orden,
+                          'action': mt5.TRADE_ACTION_REMOVE}
+        mt5.order_send(remove_pending)
+except:
+    df_pending_orders = pd.DataFrame()
+
+
