@@ -1,0 +1,8 @@
+{ "symbol":"GBPUSD",
+    "lotsize":0.01,
+    "timeframe" : "5min",
+    "nom_estrategia":"BTR",
+    "ma_period":200,
+    "lista_simbolos":["EURUSD","GBPUSD","USDJPY","USDCHF"],
+    "pips_sl":10,
+    "pips_tp":30}
