@@ -4,6 +4,7 @@ import MetaTrader5 as mt5
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
 from datetime import datetime
+import cloudscraper
                                                         
 class Basic_funcs():
 
@@ -429,55 +430,85 @@ class Basic_funcs():
             return lot_size_rounded
     
     def get_today_calendar(self) -> pd.DataFrame:
-        """Regresa un Dataframe con la información de las noticias del día contiene las columnas del simbolo y la intensidad"""
-        
-        r = Request('https://es.investing.com/economic-calendar/', headers={'User-Agent': 'Mozilla/5.0'})
-        #r = Request('https://br.investing.com/economic-calendar/')
-        response = urlopen(r).read()
-        soup = BeautifulSoup(response, "html.parser")
-        table = soup.find_all(class_ = "js-event-item")
-
+        """
+        Regresa un DataFrame con la información de las noticias del día:
+        columnas -> event, currency, time, intensity
+    
+        intensity: 1 (bajo), 2 (medio), 3 (alto) según los bullets de investing.com
+        """
+    
+        scraper = cloudscraper.create_scraper(
+            browser={
+                "browser": "chrome",
+                "platform": "windows",
+                "mobile": False,
+            }
+        )
+    
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "es-ES,es;q=0.9",
+            "Referer": "https://es.investing.com/",
+        }
+    
+        url = "https://es.investing.com/economic-calendar/"
+    
+        try:
+            response = scraper.get(url, headers=headers, timeout=15)
+            response.raise_for_status()
+        except Exception as e:
+            raise RuntimeError(f"No se pudo obtener el calendario económico: {e}")
+    
+        soup = BeautifulSoup(response.text, "html.parser")
+        table = soup.find_all(class_="js-event-item")
+    
         result = []
-        base = {}
-
+    
         for bl in table:
-            time = bl.find(class_ ="first left time js-time").text
-            # evento = bl.find(class_ ="left event").text
-            currency = bl.find(class_ ="left flagCur noWrap").text.split(' ')
-            intensity = bl.find_all(class_="left textNum sentiment noWrap")
-            id_hour = currency[1] + '_' + time
-
-            if not id_hour in base:
-                #base.update({id_hour : {'currency' : currency[1], 'time' : time,'intensity' : { "1": 0,"2": 0,"3": 0} } })
-                base.update({id_hour : {'currency' : currency[1], 'time' : time,'intensity' : 0 }})
-
-            #intencity = base[id_hour]['intensity']
-            intencity = 0
-
-
-            for intence in intensity:
-                _true = intence.find_all(class_="grayFullBullishIcon")
-                _false = intence.find_all(class_="grayEmptyBullishIcon")
-
-                if len(_true) == 1:
-                    #intencity['1'] += 1
-                    intencity = 1
-
-                elif len(_true) == 2:
-                    # intencity['2'] += 1
-                    intencity = 2
-
-                elif len(_true) == 3:
-                    #intencity['3'] += 1
-                    intencity = 3
-
-            base[id_hour].update({'intensity' : intencity})
-
-        for b in base:
-            result.append(base[b])
-
+            try:
+                time_tag = bl.find(class_="first left time js-time")
+                event_tag = bl.find(class_="left event")
+                currency_tag = bl.find(class_="left flagCur noWrap")
+    
+                if time_tag is None or currency_tag is None:
+                    # fila sin estructura esperada (festivos, headers, etc.)
+                    continue
+                
+                time = time_tag.text.strip()
+                event = event_tag.text.strip() if event_tag else ""
+                currency_parts = currency_tag.text.split()
+    
+                if len(currency_parts) < 2:
+                    continue
+                
+                currency = currency_parts[1]
+    
+                intensity_spans = bl.find_all(class_="left textNum sentiment noWrap")
+    
+                intensity = 0
+                for span in intensity_spans:
+                    filled = span.find_all(class_="grayFullBullishIcon")
+                    if len(filled) in (1, 2, 3):
+                        intensity = len(filled)
+    
+                result.append(
+                    {
+                        "event": event,
+                        "currency": currency,
+                        "time": time,
+                        "intensity": intensity,
+                    }
+                )
+    
+            except Exception:
+                # una fila corrupta no debe tumbar el resto del parsing
+                continue
+            
         news = pd.DataFrame.from_records(result)
-
         return news
     
     def _get_data_for_bt(self,timeframe,symbol,cantidad):
