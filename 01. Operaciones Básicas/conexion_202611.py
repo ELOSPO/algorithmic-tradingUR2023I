@@ -72,5 +72,60 @@ for ticket in lista_trades_abiertos:
         cierre_mi_primer_trade['type'] = mt5.ORDER_TYPE_BUY
     mt5.order_send(cierre_mi_primer_trade)
 
+
+def enviar_trade_amercado(tipo_orden,simbolo,volumen,comentario):
+    trade = {'action':mt5.TRADE_ACTION_DEAL,
+                       'type': tipo_orden,
+                       'symbol': simbolo,
+                       'volume': volumen,
+                       'type_filling':mt5.ORDER_FILLING_FOK,
+                       'comment': comentario
+                       }
+
+
+    resultado = mt5.order_send(trade)
+    return resultado
+
+def enviar_trade_pendiente(tipo_orden,simbolo,volumen,comentario,precio):
+    trade = {'action':mt5.TRADE_ACTION_PENDING,
+                       'type': tipo_orden,
+                       'symbol': simbolo,
+                       'volume': volumen,
+                       'type_filling':mt5.ORDER_FILLING_FOK,
+                       'comment': comentario,
+                       'price': precio}
     
+    resultado = mt5.order_send(trade)
+    return resultado
+
+def traer_trades_abiertos():
+    ops_abiertas = mt5.positions_get()
+    try:
+        df_posiciones = pd.DataFrame(list(ops_abiertas), columns=ops_abiertas[0]._asdict().keys())
+    except Exception as e:
+        print(f"Error occurred while creating DataFrame: {e}")
+        df_posiciones = pd.DataFrame()
+    return df_posiciones
+
+
+def cerrar_trades(df_trades):
+    cierre_dict = {'action':mt5.TRADE_ACTION_DEAL,
+                   'type_filling':mt5.ORDER_FILLING_FOK}
+    lista_trades_abiertos = df_trades['ticket'].to_list()
+    for ticket in lista_trades_abiertos:
+        print(ticket)
+        cierre_dict['position'] = ticket
+        df_temp = df_trades[df_posiciones['ticket'] == ticket]
+        cierre_dict['symbol'] = df_temp['symbol'].iloc[-1]
+        cierre_dict['volume'] = df_temp['volume'].iloc[-1]
+        tipo_trade = df_temp['type'].iloc[-1]
+        if tipo_trade == 0:
+            cierre_dict['type'] = mt5.ORDER_TYPE_SELL
+        else:
+            cierre_dict['type'] = mt5.ORDER_TYPE_BUY
+        mt5.order_send(cierre_dict)
     
+
+enviar_trade_amercado(mt5.ORDER_TYPE_BUY,'GBPUSD',0.01,'SOV')
+
+
